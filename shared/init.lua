@@ -1,689 +1,302 @@
-local L0_1, L1_1, L2_1, L3_1, L4_1, L5_1, L6_1
-L0_1 = GetCurrentResourceName
-L0_1 = L0_1()
-RESOURCE_NAME = L0_1
-L0_1 = {}
-function L1_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2
-  L2_2 = type
-  L3_2 = A1_2
-  L2_2 = L2_2(L3_2)
-  if "string" == L2_2 then
-    L2_2 = rawget
-    L3_2 = A0_2
-    L4_2 = A1_2
-    L2_2 = L2_2(L3_2, L4_2)
-    if nil == L2_2 then
-      L2_2 = print
-      L3_2 = "[LOG ERROR]: ^3Log '"
-      L4_2 = A1_2
-      L5_2 = "' does not exist in the logs.^7"
-      L3_2 = L3_2 .. L4_2 .. L5_2
-      L2_2(L3_2)
-      function L2_2()
-        local L0_3, L1_3
-      end
-      return L2_2
-  end
-  else
-    L2_2 = rawget
-    L3_2 = A0_2
-    L4_2 = A1_2
-    return L2_2(L3_2, L4_2)
-  end
+-- Shared helpers and basic state used by both client and server.
+
+-- Name of this resource (useful for debugging)
+RESOURCE_NAME = GetCurrentResourceName()
+
+--[[
+  LogsMetaTable
+  Some logging scripts set a metatable on a `Logs` table so missing
+  log types do not throw an error.  When a key does not exist we print a
+  helpful message and return a dummy function.
+]]
+LogsMetaTable = {
+  __index = function(tbl, key)
+    if type(key) ~= 'string' then
+      return rawget(tbl, key)
+    end
+
+    local fn = rawget(tbl, key)
+    if not fn then
+      print(('[LOG ERROR]: ^3Log %q does not exist in the logs.^7'):format(key))
+      return function() end
+    end
+
+    return fn
+  end,
+}
+
+-- Used as a container for shared exports if required in the future
+Shared = {}
+
+-- Warn the user if ox_lib is not running. Many features rely on it.
+if not GetResourceState('ox_lib'):find('start') then
+  print('^1ox_lib should be started before this resource^0', 2)
 end
-L0_1.__index = L1_1
-LogsMetaTable = L0_1
-L0_1 = {}
-Shared = L0_1
-L0_1 = GetResourceState
-L1_1 = "ox_lib"
-L0_1 = L0_1(L1_1)
-L1_1 = L0_1
-L0_1 = L0_1.find
-L2_1 = "start"
-L0_1 = L0_1(L1_1, L2_1)
-if not L0_1 then
-  L0_1 = print
-  L1_1 = "^1ox_lib should be started before this resource^0"
-  L2_1 = 2
-  L0_1(L1_1, L2_1)
-end
-function L0_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2
-  L1_2 = 0
-  L2_2 = pairs
-  L3_2 = A0_2
-  L2_2, L3_2, L4_2, L5_2 = L2_2(L3_2)
-  for L6_2 in L2_2, L3_2, L4_2, L5_2 do
-    L1_2 = L1_2 + 1
+
+-- Counts the number of entries in a dictionary style table
+function GetDictionaryLength(tbl)
+  local count = 0
+  for _ in pairs(tbl) do
+    count = count + 1
   end
-  return L1_2
+  return count
 end
-GetDictionaryLenght = L0_1
-function L0_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2
-  L2_2 = false
-  L3_2 = ipairs
-  L4_2 = ShellsCreators
-  L3_2, L4_2, L5_2, L6_2 = L3_2(L4_2)
-  for L7_2, L8_2 in L3_2, L4_2, L5_2, L6_2 do
-    if L8_2 == A1_2 then
-      L2_2 = true
+
+--[[
+  InsertInteriors(data, creator)
+  Registers a bundle of shell data.  Each interior is stored in
+  `ShellsData` and its id inserted into `ShellsDataIds`.  The `creator`
+  string is tracked so shells can be attributed to their source.
+]]
+function InsertInteriors(data, creator)
+  local exists = false
+  for _, name in ipairs(ShellsCreators) do
+    if name == creator then
+      exists = true
       break
     end
   end
-  if not L2_2 then
-    L3_2 = ShellsCreators
-    L4_2 = ShellsCreators
-    L4_2 = #L4_2
-    L4_2 = L4_2 + 1
-    L3_2[L4_2] = A1_2
+
+  if not exists then
+    table.insert(ShellsCreators, creator)
   end
-  L3_2 = pairs
-  L4_2 = A0_2
-  L3_2, L4_2, L5_2, L6_2 = L3_2(L4_2)
-  for L7_2, L8_2 in L3_2, L4_2, L5_2, L6_2 do
-    L9_2 = ShellsData
-    L9_2[L7_2] = L8_2
-    L9_2 = ShellsData
-    L9_2 = L9_2[L7_2]
-    L9_2.creator = A1_2
-    L9_2 = ShellsDataIds
-    L10_2 = ShellsDataIds
-    L10_2 = #L10_2
-    L10_2 = L10_2 + 1
-    L9_2[L10_2] = L7_2
+
+  for id, info in pairs(data) do
+    ShellsData[id] = info
+    ShellsData[id].creator = creator
+    table.insert(ShellsDataIds, id)
   end
 end
-InsertInteriors = L0_1
-function L0_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2, L15_2, L16_2, L17_2, L18_2, L19_2
-  L1_2 = pairs
-  L2_2 = FurnitureConfig
-  L2_2 = L2_2.Furniture
-  L1_2, L2_2, L3_2, L4_2 = L1_2(L2_2)
-  for L5_2, L6_2 in L1_2, L2_2, L3_2, L4_2 do
-    L7_2 = ipairs
-    L8_2 = L6_2.items
-    L7_2, L8_2, L9_2, L10_2 = L7_2(L8_2)
-    for L11_2, L12_2 in L7_2, L8_2, L9_2, L10_2 do
-      L13_2 = L12_2.object
-      if L13_2 == A0_2 then
-        return L12_2
+
+--[[
+  GetFurnitureDataFromObject(object)
+  Searches the furniture configuration for an entry matching the given
+  object name.  Returns the item data or `nil` if no match is found.
+]]
+function GetFurnitureDataFromObject(object)
+  for _, category in pairs(FurnitureConfig.Furniture) do
+    for _, item in ipairs(category.items) do
+      if item.object == object then
+        return item
+      end
+      if item.group_items then
+        for _, groupItem in ipairs(item.group_items) do
+          if groupItem.object == object then
+            return groupItem
+          end
+        end
+      end
+    end
+  end
+  return nil
+end
+
+--[[
+  LoadInventoryWardrobeObjects()
+  Populates `Config.InteractableProps` with any wardrobe or inventory
+  objects defined in the configuration.  The function validates the
+  supplied data and prints helpful debug information.
+]]
+function LoadInventoryWardrobeObjects()
+  -- Clothing / wardrobe objects
+  if Config.Functions.ClothingMenu then
+    for _, object in ipairs(Config.WardrobeObjects) do
+      local data = GetFurnitureDataFromObject(object)
+      if data then
+        lib.print.debug(('Adding wardrobe object %s'):format(object))
+        Config.InteractableProps[object] = lib.table.deepclone(Config.Functions.ClothingMenu)
+        local entry = Config.InteractableProps[object]
+        entry.label = data.label
+        entry.useObject = true
+        entry.radius = 2.5
       else
-        L13_2 = L12_2.group_items
-        if L13_2 then
-          L13_2 = ipairs
-          L14_2 = L12_2.group_items
-          L13_2, L14_2, L15_2, L16_2 = L13_2(L14_2)
-          for L17_2, L18_2 in L13_2, L14_2, L15_2, L16_2 do
-            L19_2 = L18_2.object
-            if L19_2 == A0_2 then
-              return L18_2
-            end
-          end
-        end
+        lib.print.error(('Object %s is not a furniture'):format(object))
       end
     end
   end
-  L1_2 = nil
-  return L1_2
-end
-GetFurnitureDataFromObject = L0_1
-function L0_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2
-  L0_2 = Config
-  L0_2 = L0_2.Functions
-  L0_2 = L0_2.ClothingMenu
-  if L0_2 then
-    L0_2 = ipairs
-    L1_2 = Config
-    L1_2 = L1_2.WardrobeObjects
-    L0_2, L1_2, L2_2, L3_2 = L0_2(L1_2)
-    for L4_2, L5_2 in L0_2, L1_2, L2_2, L3_2 do
-      L6_2 = GetFurnitureDataFromObject
-      L7_2 = L5_2
-      L6_2 = L6_2(L7_2)
-      if L6_2 then
-        L7_2 = lib
-        L7_2 = L7_2.print
-        L7_2 = L7_2.debug
-        L8_2 = "Adding wardrobe object %s"
-        L9_2 = L8_2
-        L8_2 = L8_2.format
-        L10_2 = L5_2
-        L8_2, L9_2, L10_2 = L8_2(L9_2, L10_2)
-        L7_2(L8_2, L9_2, L10_2)
-        L7_2 = Config
-        L7_2 = L7_2.InteractableProps
-        L8_2 = lib
-        L8_2 = L8_2.table
-        L8_2 = L8_2.deepclone
-        L9_2 = Config
-        L9_2 = L9_2.Functions
-        L9_2 = L9_2.ClothingMenu
-        L8_2 = L8_2(L9_2)
-        L7_2[L5_2] = L8_2
-        L7_2 = Config
-        L7_2 = L7_2.InteractableProps
-        L7_2 = L7_2[L5_2]
-        L8_2 = L6_2.label
-        L7_2.label = L8_2
-        L7_2 = Config
-        L7_2 = L7_2.InteractableProps
-        L7_2 = L7_2[L5_2]
-        L7_2.useObject = true
-        L7_2 = Config
-        L7_2 = L7_2.InteractableProps
-        L7_2 = L7_2[L5_2]
-        L7_2.radius = 2.5
+
+  -- Inventory objects
+  for object, info in pairs(Config.InventoryObjects) do
+    if type(info.slots) == 'number' and type(info.weight) == 'number' then
+      local data = GetFurnitureDataFromObject(object)
+      if data then
+        lib.print.debug(('Adding inventory object %s'):format(object))
+        Config.InteractableProps[object] = {
+          label = info.label or data.label,
+          icon = info.icon or 'fas fa-box',
+          radius = info.radius or 2.5,
+          useObject = true,
+          maxPerProperty = info.maxPerProperty or 1,
+          breakable = info.breakable or false,
+          inventory = {
+            label = info.label or data.label,
+            slots = info.slots,
+            weight = info.weight,
+          }
+        }
       else
-        L7_2 = lib
-        L7_2 = L7_2.print
-        L7_2 = L7_2.error
-        L8_2 = "Object %s is not a furniture"
-        L9_2 = L8_2
-        L8_2 = L8_2.format
-        L10_2 = L5_2
-        L8_2, L9_2, L10_2 = L8_2(L9_2, L10_2)
-        L7_2(L8_2, L9_2, L10_2)
+        lib.print.error(('Object %s is not a furniture'):format(object))
       end
-    end
-  end
-  L0_2 = pairs
-  L1_2 = Config
-  L1_2 = L1_2.InventoryObjects
-  L0_2, L1_2, L2_2, L3_2 = L0_2(L1_2)
-  for L4_2, L5_2 in L0_2, L1_2, L2_2, L3_2 do
-    L6_2 = type
-    L7_2 = L5_2.slots
-    L6_2 = L6_2(L7_2)
-    if "number" == L6_2 then
-      L6_2 = type
-      L7_2 = L5_2.weight
-      L6_2 = L6_2(L7_2)
-      if "number" == L6_2 then
-        L6_2 = GetFurnitureDataFromObject
-        L7_2 = L4_2
-        L6_2 = L6_2(L7_2)
-        if L6_2 then
-          L7_2 = lib
-          L7_2 = L7_2.print
-          L7_2 = L7_2.debug
-          L8_2 = "Adding inventory object %s"
-          L9_2 = L8_2
-          L8_2 = L8_2.format
-          L10_2 = L4_2
-          L8_2, L9_2, L10_2 = L8_2(L9_2, L10_2)
-          L7_2(L8_2, L9_2, L10_2)
-          L7_2 = Config
-          L7_2 = L7_2.InteractableProps
-          L8_2 = {}
-          L9_2 = L5_2.label
-          if not L9_2 then
-            L9_2 = L6_2.label
-          end
-          L8_2.label = L9_2
-          L9_2 = L5_2.icon
-          if not L9_2 then
-            L9_2 = "fas fa-box"
-          end
-          L8_2.icon = L9_2
-          L9_2 = L5_2.radius
-          if not L9_2 then
-            L9_2 = 2.5
-          end
-          L8_2.radius = L9_2
-          L8_2.useObject = true
-          L9_2 = L5_2.maxPerProperty
-          if not L9_2 then
-            L9_2 = 1
-          end
-          L8_2.maxPerProperty = L9_2
-          L9_2 = L5_2.breakable
-          if not L9_2 then
-            L9_2 = false
-          end
-          L8_2.breakable = L9_2
-          L9_2 = {}
-          L10_2 = L5_2.label
-          if not L10_2 then
-            L10_2 = L6_2.label
-          end
-          L9_2.label = L10_2
-          L10_2 = L5_2.slots
-          L9_2.slots = L10_2
-          L10_2 = L5_2.weight
-          L9_2.weight = L10_2
-          L8_2.inventory = L9_2
-          L7_2[L4_2] = L8_2
-        else
-          L7_2 = lib
-          L7_2 = L7_2.print
-          L7_2 = L7_2.error
-          L8_2 = "Object %s is not a furniture"
-          L9_2 = L8_2
-          L8_2 = L8_2.format
-          L10_2 = L4_2
-          L8_2, L9_2, L10_2 = L8_2(L9_2, L10_2)
-          L7_2(L8_2, L9_2, L10_2)
-        end
-    end
     else
-      L6_2 = lib
-      L6_2 = L6_2.print
-      L6_2 = L6_2.error
-      L7_2 = "Inventory object %s is not properly configured"
-      L8_2 = L7_2
-      L7_2 = L7_2.format
-      L9_2 = L4_2
-      L7_2, L8_2, L9_2, L10_2 = L7_2(L8_2, L9_2)
-      L6_2(L7_2, L8_2, L9_2, L10_2)
+      lib.print.error(('Inventory object %s is not properly configured'):format(object))
     end
   end
 end
-LoadInventoryWardrobeObjects = L0_1
-L0_1 = IsDuplicityVersion
-L0_1 = L0_1()
-if L0_1 then
-  L0_1 = {}
-  Server = L0_1
-else
-  L0_1 = {}
-  L1_1 = {}
-  L2_1 = Config
-  L2_1 = L2_1.Blips
-  L2_1 = L2_1.DefaultVisibility
-  L2_1 = L2_1.all
-  L1_1.all = L2_1
-  L2_1 = Config
-  L2_1 = L2_1.Blips
-  L2_1 = L2_1.DefaultVisibility
-  L2_1 = L2_1.owned
-  L1_1.owned = L2_1
-  L2_1 = Config
-  L2_1 = L2_1.Blips
-  L2_1 = L2_1.DefaultVisibility
-  L2_1 = L2_1.forSale
-  L1_1.forSale = L2_1
-  L2_1 = Config
-  L2_1 = L2_1.Blips
-  L2_1 = L2_1.DefaultVisibility
-  L2_1 = L2_1.forRent
-  L1_1.forRent = L2_1
-  L2_1 = Config
-  L2_1 = L2_1.Blips
-  L2_1 = L2_1.DefaultVisibility
-  L2_1 = L2_1.renter
-  L1_1.renter = L2_1
-  L2_1 = Config
-  L2_1 = L2_1.Blips
-  L2_1 = L2_1.DefaultVisibility
-  L2_1 = L2_1.keyholder
-  L1_1.keyholder = L2_1
-  L0_1.blipsVisibility = L1_1
-  L1_1 = {}
-  L0_1.menuVisibility = L1_1
-  L1_1 = {}
-  L0_1.furnitureInfo = L1_1
-  L0_1.managePropertyId = nil
-  Client = L0_1
-  L0_1 = {}
-  L0_1.furnitureMenuVisibility = true
-  L0_1.objectMenuVisibility = true
-  L1_1 = {}
-  L2_1 = {}
-  function L3_1()
-    local L0_2, L1_2
-    L0_2 = ExitFurniture
-    L0_2()
-  end
-  L2_1.furnitureMenuVisibility = L3_1
-  function L3_1()
-    local L0_2, L1_2
-    L0_2 = ExitFurniture
-    L0_2()
-  end
-  L2_1.objectMenuVisibility = L3_1
-  function L3_1()
-    local L0_2, L1_2
-    L0_2 = Client
-    L0_2.managePropertyId = nil
-  end
-  L2_1.managePropertyMenuVisibility = L3_1
-  function L3_1()
-    local L0_2, L1_2
-    L0_2 = SendNUIMessage
-    L1_2 = {}
-    L1_2.action = "init"
-    L0_2(L1_2)
-  end
-  LoadUi = L3_1
-  function L3_1()
-    local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2
-    L0_2 = {}
-    L1_2 = pairs
-    L2_2 = FurnitureConfig
-    L2_2 = L2_2.Furniture
-    L1_2, L2_2, L3_2, L4_2 = L1_2(L2_2)
-    for L5_2, L6_2 in L1_2, L2_2, L3_2, L4_2 do
-      L7_2 = {}
-      L8_2 = L6_2.label
-      L7_2.label = L8_2
-      L8_2 = L6_2.icon
-      L7_2.icon = L8_2
-      L8_2 = L6_2.image
-      L7_2.image = L8_2
-      L8_2 = {}
-      L7_2.items = L8_2
-      L0_2[L5_2] = L7_2
-    end
-    L1_2 = SendNUIMessage
-    L2_2 = {}
-    L2_2.action = "setFurniture"
-    L2_2.data = L0_2
-    L1_2(L2_2)
-  end
-  LoadFurnitureConfig = L3_1
-  function L3_1(A0_2)
-    local L1_2, L2_2, L3_2, L4_2
-    if A0_2 then
-      L1_2 = FurnitureConfig
-      L1_2 = L1_2.Furniture
-      L1_2 = L1_2[A0_2]
-      if L1_2 then
-        L1_2 = {}
-        L2_2 = FurnitureConfig
-        L2_2 = L2_2.Furniture
-        L2_2 = L2_2[A0_2]
-        L1_2[A0_2] = L2_2
-        L2_2 = SendNUIMessage
-        L3_2 = {}
-        L3_2.action = "setFurnitureCategory"
-        L3_2.data = L1_2
-        L2_2(L3_2)
-    end
-    else
-      L1_2 = lib
-      L1_2 = L1_2.print
-      L1_2 = L1_2.error
-      L2_2 = "Invalid furniture category: "
-      L3_2 = tostring
-      L4_2 = A0_2
-      L3_2 = L3_2(L4_2)
-      L2_2 = L2_2 .. L3_2
-      L1_2(L2_2)
-    end
-  end
-  LoadFurnitureCategory = L3_1
-  function L3_1(A0_2)
-    local L1_2, L2_2, L3_2
-    L1_2 = SendNUIMessage
-    L2_2 = {}
-    L2_2.action = "showHelper"
-    L3_2 = {}
-    L3_2.keyActions = A0_2
-    L2_2.data = L3_2
-    L1_2(L2_2)
-  end
-  ShowHelper = L3_1
-  function L3_1()
-    local L0_2, L1_2
-    L0_2 = SendNUIMessage
-    L1_2 = {}
-    L1_2.action = "hideHelper"
-    L0_2(L1_2)
-  end
-  HideHelper = L3_1
-  L3_1 = RegisterNUICallback
-  L4_1 = "init"
-  function L5_1(A0_2, A1_2)
-    local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2
-    L2_2 = {}
-    L3_2 = lib
-    L3_2 = L3_2.getLocales
-    L3_2 = L3_2()
-    L4_2 = pairs
-    L5_2 = L3_2
-    L4_2, L5_2, L6_2, L7_2 = L4_2(L5_2)
-    for L8_2, L9_2 in L4_2, L5_2, L6_2, L7_2 do
-      L11_2 = L8_2
-      L10_2 = L8_2.find
-      L12_2 = "^ui_"
-      L10_2 = L10_2(L11_2, L12_2)
-      if L10_2 then
-        L2_2[L8_2] = L9_2
-      end
-    end
-    L4_2 = L3_2["$"]
-    L2_2["$"] = L4_2
-    L4_2 = A1_2
-    L5_2 = {}
-    L5_2.locales = L2_2
-    L6_2 = {}
-    L7_2 = Config
-    L7_2 = L7_2.ColorTheme
-    L7_2 = L7_2.useOxTheme
-    if L7_2 then
-      L7_2 = GetConvar
-      L8_2 = "ox:primaryColor"
-      L9_2 = "blue"
-      L7_2 = L7_2(L8_2, L9_2)
-      if L7_2 then
-        goto lbl_42
-      end
-    end
-    L7_2 = GetConvar
-    L8_2 = "nolag:primaryColor"
-    L9_2 = "violet"
-    L7_2 = L7_2(L8_2, L9_2)
-    ::lbl_42::
-    L6_2.primaryColor = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.ColorTheme
-    L7_2 = L7_2.useOxTheme
-    if L7_2 then
-      L7_2 = GetConvarInt
-      L8_2 = "ox:primaryShade"
-      L9_2 = 8
-      L7_2 = L7_2(L8_2, L9_2)
-      if L7_2 then
-        goto lbl_58
-      end
-    end
-    L7_2 = GetConvarInt
-    L8_2 = "nolag:primaryShade"
-    L9_2 = 8
-    L7_2 = L7_2(L8_2, L9_2)
-    ::lbl_58::
-    L6_2.primaryShade = L7_2
-    L7_2 = FurnitureConfig
-    L7_2 = L7_2.Furniture
-    L6_2.furniture = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.PropertiesPerPage
-    L6_2.propertiesPerPage = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.EnableRenting
-    L6_2.enableRenting = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.EnableForceSale
-    L6_2.enableForceSale = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.EnableSellProperty
-    L6_2.enableSellProperty = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.Debug
-    L6_2.debug = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.EnableMap
-    L6_2.enableMap = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.MaxRentDays
-    L6_2.maxRentDays = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.DisableSocietyBuying
-    L6_2.disableSocietyBuying = L7_2
-    L7_2 = Config
-    L7_2 = L7_2.DisableSocietyRenting
-    L6_2.disableSocietyRenting = L7_2
-    L7_2 = FurnitureConfig
-    L7_2 = L7_2.DisplayType
-    if not L7_2 then
-      L7_2 = "both"
-    end
-    L6_2.furnitureDisplayType = L7_2
-    L7_2 = {}
-    L8_2 = Config
-    L8_2 = L8_2.StarterApartment
-    L8_2 = L8_2.DisableForceSale
-    L7_2.DisableForceSale = L8_2
-    L8_2 = Config
-    L8_2 = L8_2.StarterApartment
-    L8_2 = L8_2.DisableSell
-    L7_2.DisableSell = L8_2
-    L8_2 = Config
-    L8_2 = L8_2.StarterApartment
-    L8_2 = L8_2.DisableRent
-    L7_2.DisableRent = L8_2
-    L8_2 = Config
-    L8_2 = L8_2.StarterApartment
-    L8_2 = L8_2.DisableInactivity
-    L7_2.DisableInactivity = L8_2
-    L6_2.starterApartment = L7_2
-    L5_2.config = L6_2
-    L4_2(L5_2)
-  end
-  L3_1(L4_1, L5_1)
-  L3_1 = RegisterNUICallback
-  L4_1 = "sendPrimaryColor"
-  function L5_1(A0_2, A1_2)
-    local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2
-    L2_2 = A1_2
-    L3_2 = 1
-    L2_2(L3_2)
-    L2_2 = Config
-    L2_2 = L2_2.ColorTheme
-    L2_2 = L2_2.laserBasedOnTheme
-    if L2_2 then
-      L2_2 = ExtractRGB
-      L3_2 = A0_2.rgba
-      L2_2, L3_2, L4_2 = L2_2(L3_2)
-      L5_2 = Config
-      L5_2 = L5_2.ColorTheme
-      L6_2 = {}
-      L7_2 = tonumber
-      L8_2 = L2_2
-      L7_2 = L7_2(L8_2)
-      L6_2.r = L7_2
-      L7_2 = tonumber
-      L8_2 = L3_2
-      L7_2 = L7_2(L8_2)
-      L6_2.g = L7_2
-      L7_2 = tonumber
-      L8_2 = L4_2
-      L7_2 = L7_2(L8_2)
-      L6_2.b = L7_2
-      L6_2.a = 200
-      L5_2.laser = L6_2
-    end
-  end
-  L3_1(L4_1, L5_1)
-  function L3_1(A0_2)
-    local L1_2
-    L1_2 = Client
-    L1_2 = L1_2.menuVisibility
-    L1_2 = L1_2[A0_2]
-    return L1_2
-  end
-  GetMenuVisibility = L3_1
-  function L3_1()
-    local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2
-    L0_2 = pairs
-    L1_2 = Client
-    L1_2 = L1_2.menuVisibility
-    L0_2, L1_2, L2_2, L3_2 = L0_2(L1_2)
-    for L4_2, L5_2 in L0_2, L1_2, L2_2, L3_2 do
-      if L5_2 then
-        L6_2 = true
-        return L6_2
-      end
-    end
-    L0_2 = false
-    return L0_2
-  end
-  IsAnyMenuOpen = L3_1
-  function L3_1(A0_2, A1_2)
-    local L2_2, L3_2, L4_2, L5_2, L6_2
-    L2_2 = lib
-    L2_2 = L2_2.print
-    L2_2 = L2_2.debug
-    L3_2 = "Setting visibility of menu %s to %s"
-    L4_2 = L3_2
-    L3_2 = L3_2.format
-    L5_2 = A0_2
-    L6_2 = A1_2
-    L3_2, L4_2, L5_2, L6_2 = L3_2(L4_2, L5_2, L6_2)
-    L2_2(L3_2, L4_2, L5_2, L6_2)
-    L2_2 = Client
-    L2_2 = L2_2.menuVisibility
-    L2_2[A0_2] = A1_2
-    if not A1_2 then
-      L2_2 = IsAnyMenuOpen
-      L2_2 = L2_2()
-      if not L2_2 then
-        L2_2 = SetNuiFocus
-        L3_2 = false
-        L4_2 = false
-        L2_2(L3_2, L4_2)
-        L2_2 = L2_1
-        L2_2 = L2_2[A0_2]
-        if L2_2 then
-          L2_2 = L2_1
-          L2_2 = L2_2[A0_2]
-          L2_2()
-        end
-    end
-    elseif A1_2 then
-      L2_2 = IsFreecamEnabled
-      L2_2 = L2_2()
-      if not L2_2 then
-        L2_2 = L1_1
-        L2_2 = L2_2[A0_2]
-        if not L2_2 then
-          L2_2 = lib
-          L2_2 = L2_2.print
-          L2_2 = L2_2.debug
-          L3_2 = "Setting cursor visibility to %s"
-          L4_2 = L3_2
-          L3_2 = L3_2.format
-          L5_2 = A1_2
-          L3_2, L4_2, L5_2, L6_2 = L3_2(L4_2, L5_2)
-          L2_2(L3_2, L4_2, L5_2, L6_2)
-          L2_2 = SetNuiFocus
-          L3_2 = true
-          L4_2 = true
-          L2_2(L3_2, L4_2)
-          L2_2 = SetNuiFocusKeepInput
-          L3_2 = L0_1
-          L3_2 = L3_2[A0_2]
-          L2_2(L3_2)
-        end
-      end
-    end
-  end
-  L4_1 = RegisterNUICallback
-  L5_1 = "syncVisibilityAtoms"
-  function L6_1(A0_2, A1_2)
-    local L2_2, L3_2, L4_2
-    L2_2 = L3_1
-    L3_2 = A0_2.menu
-    L4_2 = A0_2.value
-    L2_2(L3_2, L4_2)
-    L2_2 = A1_2
-    L3_2 = "ok"
-    L2_2(L3_2)
-  end
-  L4_1(L5_1, L6_1)
+
+-- ========================================================================
+-- Environment specific logic
+-- ========================================================================
+
+if IsDuplicityVersion() then
+  -- Server side: placeholder for future shared utilities
+  Server = {}
+  return
 end
+
+-- Client side state ------------------------------------------------------
+
+Client = {
+  blipsVisibility = {
+    all = Config.Blips.DefaultVisibility.all,
+    owned = Config.Blips.DefaultVisibility.owned,
+    forSale = Config.Blips.DefaultVisibility.forSale,
+    forRent = Config.Blips.DefaultVisibility.forRent,
+    renter = Config.Blips.DefaultVisibility.renter,
+    keyholder = Config.Blips.DefaultVisibility.keyholder,
+  },
+  menuVisibility = {},      -- menu name -> boolean
+  furnitureInfo = {},       -- dynamic info used by the furniture editor
+  managePropertyId = nil,   -- property currently being managed
+}
+
+-- Menus that should keep player input while focused
+local keepInput = {
+  furnitureMenuVisibility = true,
+  objectMenuVisibility = true,
+}
+
+-- Cleanup functions when a menu is fully closed
+local menuCleanup = {
+  furnitureMenuVisibility = function() ExitFurniture() end,
+  objectMenuVisibility = function() ExitFurniture() end,
+  managePropertyMenuVisibility = function() Client.managePropertyId = nil end,
+}
+
+-- Sends the initial message so the NUI loads locales and config
+function LoadUi()
+  SendNUIMessage({ action = 'init' })
+end
+
+-- Sends all furniture categories to the NUI
+function LoadFurnitureConfig()
+  local categories = {}
+  for id, category in pairs(FurnitureConfig.Furniture) do
+    categories[id] = {
+      label = category.label,
+      icon = category.icon,
+      image = category.image,
+      items = {},
+    }
+  end
+  SendNUIMessage({ action = 'setFurniture', data = categories })
+end
+
+-- Sends a single furniture category to the NUI
+function LoadFurnitureCategory(category)
+  local data = FurnitureConfig.Furniture[category]
+  if data then
+    SendNUIMessage({ action = 'setFurnitureCategory', data = { [category] = data } })
+  else
+    lib.print.error('Invalid furniture category: ' .. tostring(category))
+  end
+end
+
+-- Displays a small helper block in the UI
+function ShowHelper(keyActions)
+  SendNUIMessage({ action = 'showHelper', data = { keyActions = keyActions } })
+end
+
+function HideHelper()
+  SendNUIMessage({ action = 'hideHelper' })
+end
+
+-- Initialises the UI and sends basic configuration and locale strings
+RegisterNUICallback('init', function(_, cb)
+  local locales = {}
+  for k, v in pairs(lib.getLocales()) do
+    if k:find('^ui_') then
+      locales[k] = v
+    end
+  end
+  locales['$'] = lib.getLocales()['$']
+
+  cb({
+    locales = locales,
+    config = {
+      primaryColor = GetConvar('ox:primaryColor', GetConvar('nolag:primaryColor', 'violet')),
+      primaryShade = GetConvarInt('ox:primaryShade', GetConvarInt('nolag:primaryShade', 8)),
+      furniture = FurnitureConfig.Furniture,
+      propertiesPerPage = Config.PropertiesPerPage,
+      enableRenting = Config.EnableRenting,
+      enableForceSale = Config.EnableForceSale,
+      enableSellProperty = Config.EnableSellProperty,
+      debug = Config.Debug,
+      enableMap = Config.EnableMap,
+    }
+  })
+end)
+
+-- Allows the UI to send the resolved primary color so we can tint lasers
+RegisterNUICallback('sendPrimaryColor', function(data, cb)
+  cb(1)
+  if Config.ColorTheme.laserBasedOnTheme then
+    local r, g, b = ExtractRGB(data.rgba)
+    Config.ColorTheme.laser = {
+      r = tonumber(r),
+      g = tonumber(g),
+      b = tonumber(b),
+      a = 200,
+    }
+  end
+end)
+
+-- Returns whether a specific menu is visible
+function GetMenuVisibility(menu)
+  return Client.menuVisibility[menu]
+end
+
+-- Checks if any menu is currently open
+function IsAnyMenuOpen()
+  for _, visible in pairs(Client.menuVisibility) do
+    if visible then return true end
+  end
+  return false
+end
+
+-- Sets the visibility of a menu and manages focus
+function SetMenuVisibility(menu, visible)
+  lib.print.debug(('Setting visibility of menu %s to %s'):format(menu, visible))
+  Client.menuVisibility[menu] = visible
+
+  if not visible then
+    if not IsAnyMenuOpen() then
+      SetNuiFocus(false, false)
+      if menuCleanup[menu] then menuCleanup[menu]() end
+    end
+    return
+  end
+
+  -- Opening a menu
+  if not IsFreecamEnabled() then
+    lib.print.debug(('Setting cursor visibility to %s'):format(visible))
+    SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(keepInput[menu] or false)
+  end
+end
+
+-- UI asks to sync menu visibility (e.g. when user closes a window)
+RegisterNUICallback('syncVisibilityAtoms', function(data, cb)
+  SetMenuVisibility(data.menu, data.value)
+  cb('ok')
+end)
+

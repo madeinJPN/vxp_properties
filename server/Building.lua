@@ -1,133 +1,69 @@
-local L0_1, L1_1
-L0_1 = {}
-L0_1.id = nil
-L0_1.name = nil
-L0_1.label = nil
-L1_1 = {}
-L0_1.metadata = L1_1
-ServerBuilding = L0_1
-L0_1 = ServerBuilding
-L1_1 = ServerBuilding
-L0_1.__index = L1_1
-L0_1 = ServerBuilding
-function L1_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2
-  L2_2 = setmetatable
-  L3_2 = {}
-  L4_2 = ServerBuilding
-  L2_2 = L2_2(L3_2, L4_2)
-  L3_2 = A1_2.id
-  L2_2.id = L3_2
-  L3_2 = A1_2.name
-  L2_2.name = L3_2
-  L3_2 = A1_2.label
-  L2_2.label = L3_2
-  L3_2 = ConvertToVector
-  L4_2 = A1_2.metadata
-  L3_2 = L3_2(L4_2)
-  L2_2.metadata = L3_2
-  L3_2 = AddLoadedBuilding
-  L4_2 = L2_2.id
-  L3_2(L4_2)
-  L4_2 = L2_2
-  L3_2 = L2_2.sync
-  L3_2(L4_2)
-  return L2_2
+---@class ServerBuilding
+---@field id number
+---@field name string
+---@field label string
+---@field metadata table
+local ServerBuilding = {}
+ServerBuilding.__index = ServerBuilding
+
+---Create a new building instance from database data.
+---@param data table
+function ServerBuilding.new(data)
+  local self = setmetatable({}, ServerBuilding)
+  self.id = data.id
+  self.name = data.name
+  self.label = data.label
+  -- Metadata is stored in the database as JSON; ConvertToVector converts vec types
+  self.metadata = ConvertToVector(data.metadata)
+
+  AddLoadedBuilding(self.id)
+  self:sync()
+  return self
 end
-L0_1.new = L1_1
-L0_1 = ServerBuilding
-function L1_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2
-  L3_2 = A0_2
-  L2_2 = A0_2.sync
-  L2_2(L3_2)
-  L2_2 = {}
-  L3_2 = A0_2.id
-  L2_2.building_id = L3_2
-  L3_2 = {}
-  L3_2.label = true
-  L3_2.name = true
-  L3_2.metadata = true
-  function L4_2(A0_3)
-    local L1_3, L2_3
-    L1_3 = A0_2
-    L1_3 = L1_3[A0_3]
-    if nil ~= L1_3 then
-      L1_3 = L3_2
-      L1_3 = L1_3[A0_3]
-      if L1_3 then
-        L1_3 = L2_2
-        L2_3 = A0_2
-        L2_3 = L2_3[A0_3]
-        L1_3[A0_3] = L2_3
-      end
+
+---Persist building data to the database.
+---@param fields? string|string[] optional field or list of fields to save
+function ServerBuilding:save(fields)
+  -- Always refresh global state before persisting
+  self:sync()
+
+  local payload = { building_id = self.id }
+  local allowed = {
+    label = true,
+    name = true,
+    metadata = true,
+  }
+
+  local function copy(key)
+    if allowed[key] and self[key] ~= nil then
+      payload[key] = self[key]
     end
   end
-  if nil == A1_2 then
-    L5_2 = pairs
-    L6_2 = L3_2
-    L5_2, L6_2, L7_2, L8_2 = L5_2(L6_2)
-    for L9_2, L10_2 in L5_2, L6_2, L7_2, L8_2 do
-      L11_2 = L4_2
-      L12_2 = L9_2
-      L11_2(L12_2)
-    end
-  else
-    L5_2 = type
-    L6_2 = A1_2
-    L5_2 = L5_2(L6_2)
-    if "string" == L5_2 then
-      L5_2 = L4_2
-      L6_2 = A1_2
-      L5_2(L6_2)
-    else
-      L5_2 = type
-      L6_2 = A1_2
-      L5_2 = L5_2(L6_2)
-      if "table" == L5_2 then
-        L5_2 = ipairs
-        L6_2 = A1_2
-        L5_2, L6_2, L7_2, L8_2 = L5_2(L6_2)
-        for L9_2, L10_2 in L5_2, L6_2, L7_2, L8_2 do
-          L11_2 = L4_2
-          L12_2 = L10_2
-          L11_2(L12_2)
-        end
-      end
-    end
+
+  if not fields then
+    for key in pairs(allowed) do copy(key) end
+  elseif type(fields) == 'string' then
+    copy(fields)
+  elseif type(fields) == 'table' then
+    for _, key in ipairs(fields) do copy(key) end
   end
-  L5_2 = BuildingSQL
-  L5_2 = L5_2.UpdateBuilding
-  L6_2 = L2_2
-  L5_2(L6_2)
+
+  BuildingSQL.UpdateBuilding(payload)
 end
-L0_1.save = L1_1
-L0_1 = ServerBuilding
-function L1_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2
-  L2_2 = A0_2.metadata
-  L2_2.garagePoint = A1_2
-  L3_2 = A0_2
-  L2_2 = A0_2.save
-  L4_2 = "metadata"
-  L2_2(L3_2, L4_2)
-  L3_2 = A0_2
-  L2_2 = A0_2.sync
-  L2_2(L3_2)
-  L2_2 = true
-  L3_2 = "Garage point updated successfully"
-  return L2_2, L3_2
+
+---Set the garage point for the building.
+---@param point vector3
+---@return boolean, string success, message
+function ServerBuilding:setGaragePoint(point)
+  self.metadata.garagePoint = point
+  self:save('metadata')
+  self:sync()
+  return true, 'Garage point updated successfully'
 end
-L0_1.setGaragePoint = L1_1
-L0_1 = ServerBuilding
-function L1_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2
-  L1_2 = GlobalState
-  L2_2 = "building.%s"
-  L3_2 = L2_2
-  L2_2 = L2_2.format
-  L4_2 = A0_2.id
-  L2_2 = L2_2(L3_2, L4_2)
-  L1_2[L2_2] = A0_2
+
+---Sync building data to GlobalState so clients can access it.
+function ServerBuilding:sync()
+  GlobalState[string.format('building.%s', self.id)] = self
 end
-L0_1.sync = L1_1
+
+return ServerBuilding
