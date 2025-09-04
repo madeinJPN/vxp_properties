@@ -519,54 +519,44 @@ function L2_1(A0_2, A1_2)
     L5_2 = A0_2.id
     L3_2(L4_2, L5_2)
   end
-  L3_2 = Config
-  L3_2 = L3_2.ShellUseRoutingBuckets
-  if L3_2 then
-    L3_2 = A0_2.propertyData
-    L3_2 = L3_2.type
-    if "shell" == L3_2 then
-      goto lbl_63
-    end
-  end
-  L3_2 = Config
-  L3_2 = L3_2.IplsUseRoutingBuckets
-  if L3_2 then
-    L3_2 = A0_2.propertyData
-    L3_2 = L3_2.type
-    ::lbl_63::
-    if "ipl" == L3_2 then
-      L3_2 = lib
-      L3_2 = L3_2.print
-      L3_2 = L3_2.debug
-      L4_2 = "%s [%s] is being put in bucket %s"
-      L5_2 = L4_2
-      L4_2 = L4_2.format
-      L6_2 = GetPlayerName
-      L7_2 = A1_2
-      L6_2 = L6_2(L7_2)
-      L7_2 = A1_2
-      L8_2 = A0_2.id
-      L4_2, L5_2, L6_2, L7_2, L8_2 = L4_2(L5_2, L6_2, L7_2, L8_2)
-      L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
-      L3_2 = SetPlayerRoutingBucket
-      L4_2 = A1_2
-      L5_2 = tonumber
-      L6_2 = A0_2.id
-      L5_2, L6_2, L7_2, L8_2 = L5_2(L6_2)
-      L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
-      L3_2 = Player
-      L4_2 = A1_2
-      L3_2 = L3_2(L4_2)
-      L3_2 = L3_2.state
-      L4_2 = L3_2
-      L3_2 = L3_2.set
-      L5_2 = "routingBucket"
-      L6_2 = tonumber
-      L7_2 = A0_2.id
-      L6_2 = L6_2(L7_2)
-      L7_2 = true
-      L3_2(L4_2, L5_2, L6_2, L7_2)
-    end
+  L3_2 = A0_2.propertyData
+  L3_2 = L3_2.type
+  L4_2 = Config
+  L4_2 = L4_2.ShellUseRoutingBuckets
+  L5_2 = Config
+  L5_2 = L5_2.IplsUseRoutingBuckets
+  if L4_2 and "shell" == L3_2 or L5_2 and "ipl" == L3_2 then
+    L3_2 = lib
+    L3_2 = L3_2.print
+    L3_2 = L3_2.debug
+    L4_2 = "%s [%s] is being put in bucket %s"
+    L5_2 = L4_2
+    L4_2 = L4_2.format
+    L6_2 = GetPlayerName
+    L7_2 = A1_2
+    L6_2 = L6_2(L7_2)
+    L7_2 = A1_2
+    L8_2 = A0_2.id
+    L4_2, L5_2, L6_2, L7_2, L8_2 = L4_2(L5_2, L6_2, L7_2, L8_2)
+    L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
+    L3_2 = SetPlayerRoutingBucket
+    L4_2 = A1_2
+    L5_2 = tonumber
+    L6_2 = A0_2.id
+    L5_2, L6_2, L7_2, L8_2 = L5_2(L6_2)
+    L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
+    L3_2 = Player
+    L4_2 = A1_2
+    L3_2 = L3_2(L4_2)
+    L3_2 = L3_2.state
+    L4_2 = L3_2
+    L3_2 = L3_2.set
+    L5_2 = "routingBucket"
+    L6_2 = tonumber
+    L7_2 = A0_2.id
+    L6_2 = L6_2(L7_2)
+    L7_2 = true
+    L3_2(L4_2, L5_2, L6_2, L7_2)
   end
   L3_2 = PropertySQL
   L3_2 = L3_2.updateLastEntered
@@ -636,52 +626,46 @@ function L2_1(A0_2, A1_2)
     L4_2 = "insideProperty"
     L3_2(L4_2)
   end
-  L3_2 = Config
-  L3_2 = L3_2.ShellUseRoutingBuckets
-  if L3_2 then
     L3_2 = A0_2.propertyData
     L3_2 = L3_2.type
-    if "shell" == L3_2 then
-      goto lbl_75
+    L4_2 = Config
+    L4_2 = L4_2.ShellUseRoutingBuckets
+    L4_2 = L4_2 and "shell" == L3_2
+    if not L4_2 then
+      L4_2 = Config
+      L4_2 = L4_2.IplsUseRoutingBuckets
+      L4_2 = L4_2 and "ipl" == L3_2
     end
-  end
-  L3_2 = Config
-  L3_2 = L3_2.IplsUseRoutingBuckets
-  if L3_2 then
-    L3_2 = A0_2.propertyData
-    L3_2 = L3_2.type
-    ::lbl_75::
-    if "ipl" == L3_2 then
-      L3_2 = lib
-      L3_2 = L3_2.print
-      L3_2 = L3_2.debug
-      L4_2 = "%s [%s] is being put in bucket 0"
-      L5_2 = L4_2
-      L4_2 = L4_2.format
-      L6_2 = GetPlayerName
-      L7_2 = A1_2
-      L6_2 = L6_2(L7_2)
-      L7_2 = A1_2
-      L4_2, L5_2, L6_2, L7_2, L8_2, L9_2 = L4_2(L5_2, L6_2, L7_2)
-      L3_2(L4_2, L5_2, L6_2, L7_2, L8_2, L9_2)
-      L3_2 = SetPlayerRoutingBucket
-      L4_2 = A1_2
-      L5_2 = 0
-      L3_2(L4_2, L5_2)
-      L3_2 = Player
-      L4_2 = A1_2
-      L3_2 = L3_2(L4_2)
-      L3_2 = L3_2.state
-      L4_2 = L3_2
-      L3_2 = L3_2.set
-      L5_2 = "routingBucket"
+    if L4_2 then
+      L4_2 = lib
+      L4_2 = L4_2.print
+      L4_2 = L4_2.debug
+      L5_2 = "%s [%s] is being put in bucket 0"
+      L6_2 = L5_2
+      L5_2 = L5_2.format
+      L7_2 = GetPlayerName
+      L8_2 = A1_2
+      L7_2 = L7_2(L8_2)
+      L8_2 = A1_2
+      L5_2, L6_2, L7_2, L8_2, L9_2, L10_2 = L5_2(L6_2, L7_2, L8_2)
+      L4_2(L5_2, L6_2, L7_2, L8_2, L9_2, L10_2)
+      L4_2 = SetPlayerRoutingBucket
+      L5_2 = A1_2
       L6_2 = 0
-      L7_2 = true
-      L3_2(L4_2, L5_2, L6_2, L7_2)
+      L4_2(L5_2, L6_2)
+      L4_2 = Player
+      L5_2 = A1_2
+      L4_2 = L4_2(L5_2)
+      L4_2 = L4_2.state
+      L5_2 = L4_2
+      L4_2 = L4_2.set
+      L6_2 = "routingBucket"
+      L7_2 = 0
+      L8_2 = true
+      L4_2(L5_2, L6_2, L7_2, L8_2)
     end
   end
-end
-L1_1.playerExit = L2_1
+  L1_1.playerExit = L2_1
 L1_1 = ServerProperty
 function L2_1(A0_2)
   local L1_2, L2_2
@@ -914,14 +898,14 @@ function L2_1(A0_2, A1_2, A2_2)
     L5_2 = A0_2.propertyData
     L5_2 = L5_2.owner
     if L4_2 == L5_2 then
-      goto lbl_89
+      L4_2 = false
+      L5_2 = "You own this property"
+      return L4_2, L5_2
     end
-  end
-  if "user" == A2_2 then
+  elseif "user" == A2_2 then
     L4_2 = L3_2.identifier
     L5_2 = A0_2.propertyData
     L5_2 = L5_2.owner
-    ::lbl_89::
     if L4_2 == L5_2 then
       L4_2 = false
       L5_2 = "You own this property"
@@ -960,12 +944,12 @@ function L2_1(A0_2, A1_2, A2_2)
   if "society" == A2_2 then
     L5_2 = L3_2.job
     L5_2 = L5_2.name
-    if L5_2 then
-      goto lbl_129
+    if not L5_2 then
+      L5_2 = L3_2.identifier
     end
+  else
+    L5_2 = L3_2.identifier
   end
-  L5_2 = L3_2.identifier
-  ::lbl_129::
   L6_2 = RemoveMoney
   L7_2 = A2_2
   L8_2 = L5_2
@@ -1331,14 +1315,16 @@ function L2_1(A0_2, A1_2, A2_2, A3_2, A4_2)
     L7_2 = A0_2.propertyData
     L7_2 = L7_2.owner
     if L6_2 == L7_2 then
-      goto lbl_79
+      L6_2 = false
+      L7_2 = locale
+      L8_2 = "notify_you_own_this_property"
+      L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2, L15_2, L16_2, L17_2, L18_2 = L7_2(L8_2)
+      return L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2, L15_2, L16_2, L17_2, L18_2
     end
-  end
-  if "user" == A2_2 then
+  elseif "user" == A2_2 then
     L6_2 = L5_2.identifier
     L7_2 = A0_2.propertyData
     L7_2 = L7_2.owner
-    ::lbl_79::
     if L6_2 == L7_2 then
       L6_2 = false
       L7_2 = locale
@@ -1425,12 +1411,12 @@ function L2_1(A0_2, A1_2, A2_2, A3_2, A4_2)
   if "society" == A2_2 then
     L9_2 = L5_2.job
     L9_2 = L9_2.name
-    if L9_2 then
-      goto lbl_170
+    if not L9_2 then
+      L9_2 = L5_2.identifier
     end
+  else
+    L9_2 = L5_2.identifier
   end
-  L9_2 = L5_2.identifier
-  ::lbl_170::
   L10_2 = RemoveMoney
   L11_2 = A2_2
   L12_2 = L9_2
@@ -1611,12 +1597,12 @@ function L2_1(A0_2, A1_2, A2_2)
   if "society" == L8_2 then
     L9_2 = L3_2.job
     L9_2 = L9_2.name
-    if L9_2 then
-      goto lbl_80
+    if not L9_2 then
+      L9_2 = L3_2.identifier
     end
+  else
+    L9_2 = L3_2.identifier
   end
-  L9_2 = L3_2.identifier
-  ::lbl_80::
   L10_2 = RemoveMoney
   L11_2 = L8_2
   L12_2 = L9_2
@@ -1965,30 +1951,19 @@ function L2_1(A0_2, A1_2, A2_2)
     L4_2 = locale
     L5_2 = "property_rent_action_cancel_owner"
     L4_2 = L4_2(L5_2)
-    if L4_2 then
-      goto lbl_56
-    end
-  end
-  if "renter" == A2_2 then
+  elseif "renter" == A2_2 then
     L4_2 = locale
     L5_2 = "property_rent_action_cancel_renter"
     L4_2 = L4_2(L5_2)
-    if L4_2 then
-      goto lbl_56
-    end
-  end
-  if "rent_ended" == A2_2 then
+  elseif "rent_ended" == A2_2 then
     L4_2 = locale
     L5_2 = "property_rent_action_cancel_rent_ended"
     L4_2 = L4_2(L5_2)
-    if L4_2 then
-      goto lbl_56
-    end
+  else
+    L4_2 = locale
+    L5_2 = "property_rent_action_cancel_auto_renew"
+    L4_2 = L4_2(L5_2)
   end
-  L4_2 = locale
-  L5_2 = "property_rent_action_cancel_auto_renew"
-  L4_2 = L4_2(L5_2)
-  ::lbl_56::
   L5_2 = Config
   L5_2 = L5_2.RemoveAllKeysOnRentCancel
   if L5_2 then
@@ -2146,12 +2121,9 @@ function L2_1(A0_2, A1_2)
           L16_2 = L9_2.rented_from
           L16_2 = L16_2 / 1000
           L14_2 = L14_2(L15_2, L16_2)
-          if L14_2 then
-            goto lbl_74
-          end
+        else
+          L14_2 = nil
         end
-        L14_2 = nil
-        ::lbl_74::
         L13_2.rentedFrom = L14_2
         L14_2 = L9_2.rented_to
         if L14_2 then
@@ -2161,35 +2133,25 @@ function L2_1(A0_2, A1_2)
           L16_2 = L9_2.rented_to
           L16_2 = L16_2 / 1000
           L14_2 = L14_2(L15_2, L16_2)
-          if L14_2 then
-            goto lbl_88
-          end
+        else
+          L14_2 = nil
         end
-        L14_2 = nil
-        ::lbl_88::
         L13_2.rentedTo = L14_2
         L14_2 = L9_2.rented_price
         L13_2.rentedPrice = L14_2
         L14_2 = L9_2.canceled_on
-        if L14_2 then
-          L14_2 = L9_2.canceled_on
-          L15_2 = L9_2.canceled_on
-          if L14_2 == L15_2 then
-            L14_2 = os
-            L14_2 = L14_2.date
-            L15_2 = "%Y-%m-%d"
-            L16_2 = L9_2.canceled_on
-            L16_2 = L16_2 / 1000
-            L14_2 = L14_2(L15_2, L16_2)
-            if L14_2 then
-              goto lbl_110
-            end
-          end
+        if L14_2 and L14_2 == L9_2.canceled_on then
+          L14_2 = os
+          L14_2 = L14_2.date
+          L15_2 = "%Y-%m-%d"
+          L16_2 = L9_2.canceled_on
+          L16_2 = L16_2 / 1000
+          L14_2 = L14_2(L15_2, L16_2)
+        else
+          L14_2 = locale
+          L15_2 = "property_rent_not_canceled"
+          L14_2 = L14_2(L15_2)
         end
-        L14_2 = locale
-        L15_2 = "property_rent_not_canceled"
-        L14_2 = L14_2(L15_2)
-        ::lbl_110::
         L13_2.canceledAt = L14_2
         L14_2 = L9_2.canceled_on
         if nil == L14_2 then
@@ -2200,13 +2162,12 @@ function L2_1(A0_2, A1_2)
           L15_2 = L15_2 * 1000
           if L14_2 > L15_2 then
             L14_2 = true
-            if L14_2 then
-              goto lbl_126
-            end
+          else
+            L14_2 = false
           end
+        else
+          L14_2 = false
         end
-        L14_2 = false
-        ::lbl_126::
         L13_2.isActive = L14_2
         L14_2 = L9_2.auto_renew
         L13_2.autoRenew = L14_2
@@ -2515,5 +2476,3 @@ function L2_1(A0_2, A1_2)
   return L3_2
 end
 L1_1.removeAllKeys = L2_1
-L1_1 = ServerProperty
-function L2_1(A0_2, A1_2, A2_2)
