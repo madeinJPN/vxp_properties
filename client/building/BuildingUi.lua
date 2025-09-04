@@ -1,468 +1,142 @@
-local L0_1, L1_1, L2_1
-L0_1 = RegisterNUICallback
-L1_1 = "filterProperties"
-function L2_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2, L15_2, L16_2, L17_2, L18_2, L19_2, L20_2, L21_2, L22_2, L23_2, L24_2, L25_2, L26_2, L27_2, L28_2, L29_2, L30_2
-  L2_2 = A1_2
-  L3_2 = "ok"
-  L2_2(L3_2)
-  L2_2 = A0_2.ownedByMe
-  L3_2 = A0_2.rentedByMe
-  L4_2 = A0_2.forSale
-  L5_2 = A0_2.forRent
-  L6_2 = A0_2.hasKeys
-  L7_2 = A0_2.tags
-  L8_2 = A0_2.search
-  L9_2 = 1
-  L10_2 = Config
-  L10_2 = L10_2.PropertiesPerPage
-  L11_2 = A0_2.buildingId
-  L12_2 = BuildingManager
-  L13_2 = L12_2
-  L12_2 = L12_2.getBuildingById
-  L14_2 = tonumber
-  L15_2 = L11_2
-  L14_2, L15_2, L16_2, L17_2, L18_2, L19_2, L20_2, L21_2, L22_2, L23_2, L24_2, L25_2, L26_2, L27_2, L28_2, L29_2, L30_2 = L14_2(L15_2)
-  L12_2 = L12_2(L13_2, L14_2, L15_2, L16_2, L17_2, L18_2, L19_2, L20_2, L21_2, L22_2, L23_2, L24_2, L25_2, L26_2, L27_2, L28_2, L29_2, L30_2)
-  if not L12_2 then
+-- Handlers for Building related NUI callbacks
+
+-- Filter the list of properties inside a building
+RegisterNUICallback("filterProperties", function(data, cb)
+  cb("ok")
+
+  local building = BuildingManager:getBuildingById(tonumber(data.buildingId))
+  if not building then return end
+
+  local ownedByMe = data.ownedByMe
+  local rentedByMe = data.rentedByMe
+  local forSale = data.forSale
+  local forRent = data.forRent
+  local hasKeys = data.hasKeys
+  local search = string.lower(data.search or "")
+
+  local filtered = {}
+  for _, property in pairs(building.properties) do
+    local matches = true
+
+    if ownedByMe and not property:isOwner() then matches = false end
+    if rentedByMe and not property:isRenter() then matches = false end
+    if forSale and not property.forSale then matches = false end
+    if forRent and not property.forRent then matches = false end
+    if hasKeys and not property:hasKey() then matches = false end
+
+    if matches and search ~= "" then
+      local lowerLabel = string.lower(property.label)
+      local owner = property.owner and string.lower(property.owner) or nil
+      matches = string.find(lowerLabel, search, 1, true) or
+                string.find(tostring(property.id), search, 1, true) or
+                (owner and string.find(owner, search, 1, true))
+    end
+
+    if matches then
+      table.insert(filtered, property)
+    end
+  end
+
+  building.filterProperties = filtered
+  building.page = 1
+  building:openInteractMenuUI(1)
+end)
+
+-- Retrieve a single page of properties for the building menu
+RegisterNUICallback("getProperties", function(data, cb)
+  cb("ok")
+
+  local page = tonumber(data.page) or 1
+  local perPage = Config.PropertiesPerPage
+  local building = BuildingManager:getBuildingById(data.buildingId)
+  if not building then
+    lib.print.debug("Building not found")
     return
   end
-  L13_2 = L12_2.properties
-  L14_2 = {}
-  L15_2 = pairs
-  L16_2 = L13_2
-  L15_2, L16_2, L17_2, L18_2 = L15_2(L16_2)
-  for L19_2, L20_2 in L15_2, L16_2, L17_2, L18_2 do
-    L22_2 = L20_2
-    L21_2 = L20_2.isOwner
-    L21_2 = not L2_2 or L21_2
-    L23_2 = L20_2
-    L22_2 = L20_2.isRenter
-    L22_2 = not L3_2 or L22_2
-    L23_2 = not L4_2 or L23_2
-    L24_2 = not L5_2 or L24_2
-    L25_2 = string
-    L25_2 = L25_2.find
-    L26_2 = string
-    L26_2 = L26_2.lower
-    L27_2 = L20_2.label
-    L26_2 = L26_2(L27_2)
-    L27_2 = string
-    L27_2 = L27_2.lower
-    L28_2 = L8_2
-    L27_2, L28_2, L29_2, L30_2 = L27_2(L28_2)
-    L25_2 = L25_2(L26_2, L27_2, L28_2, L29_2, L30_2)
-    if not L25_2 then
-      L25_2 = string
-      L25_2 = L25_2.find
-      L26_2 = tostring
-      L27_2 = L20_2.id
-      L26_2 = L26_2(L27_2)
-      L27_2 = string
-      L27_2 = L27_2.lower
-      L28_2 = L8_2
-      L27_2, L28_2, L29_2, L30_2 = L27_2(L28_2)
-      L25_2 = L25_2(L26_2, L27_2, L28_2, L29_2, L30_2)
-      if not L25_2 then
-        L25_2 = L20_2.owner
-        if L25_2 then
-          L25_2 = string
-          L25_2 = L25_2.find
-          L26_2 = string
-          L26_2 = L26_2.lower
-          L27_2 = L20_2.owner
-          L26_2 = L26_2(L27_2)
-          L27_2 = string
-          L27_2 = L27_2.lower
-          L28_2 = L8_2
-          L27_2, L28_2, L29_2, L30_2 = L27_2(L28_2)
-          L25_2 = not L8_2 or L25_2
-        end
-      end
-    end
-    L27_2 = L20_2
-    L26_2 = L20_2.hasKey
-    L26_2 = not L6_2 or L26_2
-    if L21_2 and L22_2 and L23_2 and L24_2 and L25_2 and L26_2 then
-      L27_2 = #L14_2
-      L27_2 = L27_2 + 1
-      L14_2[L27_2] = L20_2
-    end
-  end
-  L12_2.filterProperties = L14_2
-  L15_2 = L9_2 - 1
-  L15_2 = L15_2 * L10_2
-  L15_2 = L15_2 + 1
-  L16_2 = math
-  L16_2 = L16_2.min
-  L17_2 = L15_2 + L10_2
-  L17_2 = L17_2 - 1
-  L18_2 = L12_2.filterProperties
-  L18_2 = #L18_2
-  L16_2 = L16_2(L17_2, L18_2)
-  L17_2 = {}
-  L18_2 = 0
-  L19_2 = pairs
-  L20_2 = L12_2.filterProperties
-  L19_2, L20_2, L21_2, L22_2 = L19_2(L20_2)
-  for L23_2, L24_2 in L19_2, L20_2, L21_2, L22_2 do
-    L18_2 = L18_2 + 1
-    if L15_2 <= L18_2 and L16_2 >= L18_2 then
-      L25_2 = false
-      L26_2 = Config
-      L26_2 = L26_2.Building
-      L26_2 = L26_2.OwnerDisplay
-      if L26_2 then
-        L26_2 = Config
-        L26_2 = L26_2.Building
-        L26_2 = L26_2.OwnerDisplayType
-        if "identifier" == L26_2 then
-          L25_2 = L24_2.owner
-        else
-          L26_2 = Config
-          L26_2 = L26_2.Building
-          L26_2 = L26_2.OwnerDisplayType
-          if "type" == L26_2 then
-            L25_2 = L24_2.ownerType
+
+  local startIndex = (page - 1) * perPage + 1
+  local endIndex = math.min(startIndex + perPage - 1, #building.filterProperties)
+  local properties = {}
+  local count = 0
+  for i, prop in ipairs(building.filterProperties) do
+    count = count + 1
+    if i >= startIndex and i <= endIndex then
+      local ownerDisplay
+      if Config.Building.OwnerDisplay then
+        local displayType = Config.Building.OwnerDisplayType
+        if displayType == "identifier" then
+          ownerDisplay = prop.owner
+        elseif displayType == "type" then
+          ownerDisplay = prop.ownerType
+        elseif displayType == "name" then
+          if prop.ownerType == "user" then
+            ownerDisplay = lib.callback.await("nolag_properties:server:getPlayerName", false, prop.owner) or prop.owner
           else
-            L26_2 = Config
-            L26_2 = L26_2.Building
-            L26_2 = L26_2.OwnerDisplayType
-            if "name" == L26_2 then
-              L26_2 = L24_2.ownerType
-              if "user" == L26_2 then
-                L26_2 = lib
-                L26_2 = L26_2.callback
-                L26_2 = L26_2.await
-                L27_2 = "nolag_properties:server:getPlayerName"
-                L28_2 = false
-                L29_2 = L24_2.owner
-                L26_2 = L26_2(L27_2, L28_2, L29_2)
-                if L26_2 then
-                  goto lbl_194
-                  L25_2 = L26_2 or L25_2
-                end
-              end
-              L25_2 = L24_2.owner
-            end
+            ownerDisplay = prop.owner
           end
         end
       end
-      ::lbl_194::
-      L26_2 = #L17_2
-      L26_2 = L26_2 + 1
-      L27_2 = {}
-      L28_2 = L24_2.id
-      L27_2.id = L28_2
-      L28_2 = L24_2.label
-      L27_2.title = L28_2
-      L28_2 = L24_2.type
-      L27_2.type = L28_2
-      L28_2 = L24_2.owner
-      L27_2.owner = L28_2
-      L27_2.ownerDisplay = L25_2
-      L29_2 = L24_2
-      L28_2 = L24_2.getMetadata
-      L28_2 = L28_2(L29_2)
-      L28_2 = L28_2.images
-      L28_2 = L28_2[1]
-      if not L28_2 then
-        L28_2 = "https://via.placeholder.com/150"
-      end
-      L27_2.image = L28_2
-      L28_2 = PlayerData
-      L28_2 = L28_2.insideProperty
-      L27_2.inside = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.hasKey
-      L28_2 = L28_2(L29_2)
-      L27_2.hasKey = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.getDoorLockedState
-      L28_2 = L28_2(L29_2)
-      L27_2.doorLocked = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.isDoorBlocked
-      L28_2 = L28_2(L29_2)
-      L27_2.doorBlocked = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.isAbleToManage
-      L28_2 = L28_2(L29_2)
-      L27_2.isAbleToManage = L28_2
-      L28_2 = Framework
-      L28_2 = L28_2.isPlayerAuthorizedToLockdown
-      L28_2 = L28_2()
-      L27_2.isAbleToLockdown = L28_2
-      L28_2 = Framework
-      L28_2 = L28_2.isPlayerAuthorizedToRaid
-      L28_2 = L28_2()
-      L27_2.isAbleToBreach = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.showOffer
-      L28_2 = L28_2(L29_2)
-      L27_2.showOffer = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.displayOption
-      L30_2 = "lockpick"
-      L28_2 = L28_2(L29_2, L30_2)
-      L27_2.showLockpick = L28_2
-      L29_2 = L24_2
-      L28_2 = L24_2.isOwner
-      L28_2 = L28_2(L29_2)
-      L27_2.isOwner = L28_2
-      L17_2[L26_2] = L27_2
+
+      table.insert(properties, {
+        id = prop.id,
+        title = prop.label,
+        type = prop.type,
+        owner = prop.owner,
+        ownerDisplay = ownerDisplay,
+        image = (prop:getMetadata().images or {})[1] or "https://via.placeholder.com/150",
+        inside = PlayerData.insideProperty,
+        hasKey = prop:hasKey(),
+        doorLocked = prop:getDoorLockedState(),
+        doorBlocked = prop:isDoorBlocked(),
+        isAbleToManage = prop:isAbleToManage(),
+        isAbleToLockdown = Framework.isPlayerAuthorizedToLockdown(),
+        isAbleToBreach = Framework.isPlayerAuthorizedToRaid(),
+        showOffer = prop:showOffer(),
+        showLockpick = prop:displayOption("lockpick"),
+        isOwner = prop:isOwner(),
+      })
     end
   end
-  L12_2.page = L9_2
-  L19_2 = SendNUIMessage
-  L20_2 = {}
-  L20_2.action = "updatePropertiesInBuilding"
-  L21_2 = {}
-  L21_2.properties = L17_2
-  L22_2 = L12_2.filterProperties
-  L22_2 = #L22_2
-  L21_2.totalProperties = L22_2
-  L21_2.page = L9_2
-  L20_2.data = L21_2
-  L19_2(L20_2)
-end
-L0_1(L1_1, L2_1)
-L0_1 = RegisterNUICallback
-L1_1 = "getProperties"
-function L2_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2, L15_2, L16_2, L17_2, L18_2, L19_2, L20_2, L21_2
-  L2_2 = A1_2
-  L3_2 = "ok"
-  L2_2(L3_2)
-  L2_2 = tonumber
-  L3_2 = A0_2.page
-  L2_2 = L2_2(L3_2)
-  L3_2 = Config
-  L3_2 = L3_2.PropertiesPerPage
-  L4_2 = A0_2.buildingId
-  L5_2 = BuildingManager
-  L6_2 = L5_2
-  L5_2 = L5_2.getBuildingById
-  L7_2 = L4_2
-  L5_2 = L5_2(L6_2, L7_2)
-  if not L5_2 then
-    L6_2 = lib
-    L6_2 = L6_2.print
-    L6_2 = L6_2.debug
-    L7_2 = "Building not found"
-    L6_2(L7_2)
+
+  building.page = page
+  SendNUIMessage({
+    action = "updatePropertiesInBuilding",
+    data = {
+      properties = properties,
+      totalProperties = #building.filterProperties,
+      page = page,
+    }
+  })
+end)
+
+-- Handle menu actions triggered from the building UI
+RegisterNUICallback("buildingInteractWithProperty", function(data, cb)
+  local building = BuildingManager:getBuildingById(data.buildingId)
+  local property = PropertyManager:getPropertyById(data.propertyId)
+  if not property then
+    lib.print.error("Property with id: " .. data.propertyId .. " not found")
+    cb("ok")
     return
   end
-  L6_2 = L2_2 - 1
-  L6_2 = L6_2 * L3_2
-  L6_2 = L6_2 + 1
-  L7_2 = math
-  L7_2 = L7_2.min
-  L8_2 = L6_2 + L3_2
-  L8_2 = L8_2 - 1
-  L9_2 = L5_2.filterProperties
-  L9_2 = #L9_2
-  L7_2 = L7_2(L8_2, L9_2)
-  L8_2 = {}
-  L9_2 = 0
-  L10_2 = pairs
-  L11_2 = L5_2.filterProperties
-  L10_2, L11_2, L12_2, L13_2 = L10_2(L11_2)
-  for L14_2, L15_2 in L10_2, L11_2, L12_2, L13_2 do
-    L9_2 = L9_2 + 1
-    if L6_2 <= L9_2 and L7_2 >= L9_2 then
-      L16_2 = false
-      L17_2 = Config
-      L17_2 = L17_2.Building
-      L17_2 = L17_2.OwnerDisplay
-      if L17_2 then
-        L17_2 = Config
-        L17_2 = L17_2.Building
-        L17_2 = L17_2.OwnerDisplayType
-        if "identifier" == L17_2 then
-          L16_2 = L15_2.owner
-        else
-          L17_2 = Config
-          L17_2 = L17_2.Building
-          L17_2 = L17_2.OwnerDisplayType
-          if "type" == L17_2 then
-            L16_2 = L15_2.ownerType
-          else
-            L17_2 = Config
-            L17_2 = L17_2.Building
-            L17_2 = L17_2.OwnerDisplayType
-            if "name" == L17_2 then
-              L17_2 = L15_2.ownerType
-              if "user" == L17_2 then
-                L17_2 = lib
-                L17_2 = L17_2.callback
-                L17_2 = L17_2.await
-                L18_2 = "nolag_properties:server:getPlayerName"
-                L19_2 = false
-                L20_2 = L15_2.owner
-                L17_2 = L17_2(L18_2, L19_2, L20_2)
-                if L17_2 then
-                  goto lbl_88
-                  L16_2 = L17_2 or L16_2
-                end
-              end
-              L16_2 = L15_2.owner
-            end
-          end
-        end
-      end
-      ::lbl_88::
-      L17_2 = #L8_2
-      L17_2 = L17_2 + 1
-      L18_2 = {}
-      L19_2 = L15_2.id
-      L18_2.id = L19_2
-      L19_2 = L15_2.label
-      L18_2.title = L19_2
-      L19_2 = L15_2.type
-      L18_2.type = L19_2
-      L19_2 = L15_2.owner
-      L18_2.owner = L19_2
-      L18_2.ownerDisplay = L16_2
-      L20_2 = L15_2
-      L19_2 = L15_2.getMetadata
-      L19_2 = L19_2(L20_2)
-      L19_2 = L19_2.images
-      L19_2 = L19_2[1]
-      if not L19_2 then
-        L19_2 = "https://via.placeholder.com/150"
-      end
-      L18_2.image = L19_2
-      L19_2 = PlayerData
-      L19_2 = L19_2.insideProperty
-      L18_2.inside = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.hasKey
-      L19_2 = L19_2(L20_2)
-      L18_2.hasKey = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.getDoorLockedState
-      L19_2 = L19_2(L20_2)
-      L18_2.doorLocked = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.isDoorBlocked
-      L19_2 = L19_2(L20_2)
-      L18_2.doorBlocked = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.isAbleToManage
-      L19_2 = L19_2(L20_2)
-      L18_2.isAbleToManage = L19_2
-      L19_2 = Framework
-      L19_2 = L19_2.isPlayerAuthorizedToLockdown
-      L19_2 = L19_2()
-      L18_2.isAbleToLockdown = L19_2
-      L19_2 = Framework
-      L19_2 = L19_2.isPlayerAuthorizedToRaid
-      L19_2 = L19_2()
-      L18_2.isAbleToBreach = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.showOffer
-      L19_2 = L19_2(L20_2)
-      L18_2.showOffer = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.displayOption
-      L21_2 = "lockpick"
-      L19_2 = L19_2(L20_2, L21_2)
-      L18_2.showLockpick = L19_2
-      L20_2 = L15_2
-      L19_2 = L15_2.isOwner
-      L19_2 = L19_2(L20_2)
-      L18_2.isOwner = L19_2
-      L8_2[L17_2] = L18_2
-    end
-  end
-  L5_2.page = L2_2
-  L10_2 = SendNUIMessage
-  L11_2 = {}
-  L11_2.action = "updatePropertiesInBuilding"
-  L12_2 = {}
-  L12_2.properties = L8_2
-  L11_2.data = L12_2
-  L10_2(L11_2)
-end
-L0_1(L1_1, L2_1)
-L0_1 = RegisterNUICallback
-L1_1 = "buildingInteractWithProperty"
-function L2_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2
-  L2_2 = A0_2.buildingId
-  L3_2 = A0_2.propertyId
-  L4_2 = PropertyManager
-  L5_2 = L4_2
-  L4_2 = L4_2.getPropertyById
-  L6_2 = L3_2
-  L4_2 = L4_2(L5_2, L6_2)
-  L5_2 = BuildingManager
-  L6_2 = L5_2
-  L5_2 = L5_2.getBuildingById
-  L7_2 = L2_2
-  L5_2 = L5_2(L6_2, L7_2)
-  if not L4_2 then
-    L6_2 = lib
-    L6_2 = L6_2.print
-    L6_2 = L6_2.error
-    L7_2 = "Property with id: "
-    L8_2 = L3_2
-    L9_2 = " not found"
-    L7_2 = L7_2 .. L8_2 .. L9_2
-    L6_2(L7_2)
+  if not building then
+    lib.print.error("Building with id: " .. data.buildingId .. " not found")
+    cb("ok")
     return
   end
-  if not L5_2 then
-    L6_2 = lib
-    L6_2 = L6_2.print
-    L6_2 = L6_2.error
-    L7_2 = "Building with id: "
-    L8_2 = L2_2
-    L9_2 = " not found"
-    L7_2 = L7_2 .. L8_2 .. L9_2
-    L6_2(L7_2)
-    return
+
+  if data.action == "enter" then
+    property:enter()
+  elseif data.action == "toggleDoorlock" then
+    property:toggleDoorlock()
+    building:refreshUIPage()
+  elseif data.action == "ringDoorbell" then
+    property:doorBell()
+  elseif data.action == "lockdown" then
+    property:policeLockdown()
+  elseif data.action == "breach" then
+    property:policeRaid()
   end
-  L6_2 = A0_2.action
-  if "enter" == L6_2 then
-    L7_2 = L4_2
-    L6_2 = L4_2.enter
-    L6_2(L7_2)
-  else
-    L6_2 = A0_2.action
-    if "toggleDoorlock" == L6_2 then
-      L7_2 = L4_2
-      L6_2 = L4_2.toggleDoorlock
-      L6_2(L7_2)
-      L7_2 = L5_2
-      L6_2 = L5_2.refreshInteractMenuUI
-      L6_2(L7_2)
-    else
-      L6_2 = A0_2.action
-      if "ringDoorbell" == L6_2 then
-        L7_2 = L4_2
-        L6_2 = L4_2.doorBell
-        L6_2(L7_2)
-      else
-        L6_2 = A0_2.action
-        if "lockdown" == L6_2 then
-          L7_2 = L4_2
-          L6_2 = L4_2.policeLockdown
-          L6_2(L7_2)
-        else
-          L6_2 = A0_2.action
-          if "breach" == L6_2 then
-            L7_2 = L4_2
-            L6_2 = L4_2.policeRaid
-            L6_2(L7_2)
-          end
-        end
-      end
-    end
-  end
-  L6_2 = A1_2
-  L7_2 = "ok"
-  L6_2(L7_2)
-end
-L0_1(L1_1, L2_1)
+
+  cb("ok")
+end)
+
