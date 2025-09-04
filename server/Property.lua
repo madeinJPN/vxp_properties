@@ -519,54 +519,44 @@ function L2_1(A0_2, A1_2)
     L5_2 = A0_2.id
     L3_2(L4_2, L5_2)
   end
-  L3_2 = Config
-  L3_2 = L3_2.ShellUseRoutingBuckets
-  if L3_2 then
-    L3_2 = A0_2.propertyData
-    L3_2 = L3_2.type
-    if "shell" == L3_2 then
-      goto lbl_63
-    end
-  end
-  L3_2 = Config
-  L3_2 = L3_2.IplsUseRoutingBuckets
-  if L3_2 then
-    L3_2 = A0_2.propertyData
-    L3_2 = L3_2.type
-    ::lbl_63::
-    if "ipl" == L3_2 then
-      L3_2 = lib
-      L3_2 = L3_2.print
-      L3_2 = L3_2.debug
-      L4_2 = "%s [%s] is being put in bucket %s"
-      L5_2 = L4_2
-      L4_2 = L4_2.format
-      L6_2 = GetPlayerName
-      L7_2 = A1_2
-      L6_2 = L6_2(L7_2)
-      L7_2 = A1_2
-      L8_2 = A0_2.id
-      L4_2, L5_2, L6_2, L7_2, L8_2 = L4_2(L5_2, L6_2, L7_2, L8_2)
-      L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
-      L3_2 = SetPlayerRoutingBucket
-      L4_2 = A1_2
-      L5_2 = tonumber
-      L6_2 = A0_2.id
-      L5_2, L6_2, L7_2, L8_2 = L5_2(L6_2)
-      L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
-      L3_2 = Player
-      L4_2 = A1_2
-      L3_2 = L3_2(L4_2)
-      L3_2 = L3_2.state
-      L4_2 = L3_2
-      L3_2 = L3_2.set
-      L5_2 = "routingBucket"
-      L6_2 = tonumber
-      L7_2 = A0_2.id
-      L6_2 = L6_2(L7_2)
-      L7_2 = true
-      L3_2(L4_2, L5_2, L6_2, L7_2)
-    end
+  L3_2 = A0_2.propertyData
+  L3_2 = L3_2.type
+  L4_2 = Config
+  L4_2 = L4_2.ShellUseRoutingBuckets
+  L5_2 = Config
+  L5_2 = L5_2.IplsUseRoutingBuckets
+  if L4_2 and "shell" == L3_2 or L5_2 and "ipl" == L3_2 then
+    L3_2 = lib
+    L3_2 = L3_2.print
+    L3_2 = L3_2.debug
+    L4_2 = "%s [%s] is being put in bucket %s"
+    L5_2 = L4_2
+    L4_2 = L4_2.format
+    L6_2 = GetPlayerName
+    L7_2 = A1_2
+    L6_2 = L6_2(L7_2)
+    L7_2 = A1_2
+    L8_2 = A0_2.id
+    L4_2, L5_2, L6_2, L7_2, L8_2 = L4_2(L5_2, L6_2, L7_2, L8_2)
+    L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
+    L3_2 = SetPlayerRoutingBucket
+    L4_2 = A1_2
+    L5_2 = tonumber
+    L6_2 = A0_2.id
+    L5_2, L6_2, L7_2, L8_2 = L5_2(L6_2)
+    L3_2(L4_2, L5_2, L6_2, L7_2, L8_2)
+    L3_2 = Player
+    L4_2 = A1_2
+    L3_2 = L3_2(L4_2)
+    L3_2 = L3_2.state
+    L4_2 = L3_2
+    L3_2 = L3_2.set
+    L5_2 = "routingBucket"
+    L6_2 = tonumber
+    L7_2 = A0_2.id
+    L6_2 = L6_2(L7_2)
+    L7_2 = true
+    L3_2(L4_2, L5_2, L6_2, L7_2)
   end
   L3_2 = PropertySQL
   L3_2 = L3_2.updateLastEntered
