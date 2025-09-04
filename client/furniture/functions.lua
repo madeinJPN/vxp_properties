@@ -21,56 +21,14 @@ end
 L2_1.round = L3_1
 L2_1 = FUNC
 function L3_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2
-  L1_2 = vec3
-  L2_2 = math
-  L2_2 = L2_2.pi
-  L2_2 = L2_2 / 180
-  L3_2 = A0_2.x
-  L2_2 = L2_2 * L3_2
-  L3_2 = math
-  L3_2 = L3_2.pi
-  L3_2 = L3_2 / 180
-  L4_2 = A0_2.y
-  L3_2 = L3_2 * L4_2
-  L4_2 = math
-  L4_2 = L4_2.pi
-  L4_2 = L4_2 / 180
-  L5_2 = A0_2.z
-  L4_2 = L4_2 * L5_2
-  L1_2 = L1_2(L2_2, L3_2, L4_2)
-  L2_2 = vec3
-  L3_2 = math
-  L3_2 = L3_2.sin
-  L4_2 = L1_2.z
-  L3_2 = L3_2(L4_2)
-  L3_2 = -L3_2
-  L4_2 = math
-  L4_2 = L4_2.abs
-  L5_2 = math
-  L5_2 = L5_2.cos
-  L6_2 = L1_2.x
-  L5_2, L6_2, L7_2 = L5_2(L6_2)
-  L4_2 = L4_2(L5_2, L6_2, L7_2)
-  L3_2 = L3_2 * L4_2
-  L4_2 = math
-  L4_2 = L4_2.cos
-  L5_2 = L1_2.z
-  L4_2 = L4_2(L5_2)
-  L5_2 = math
-  L5_2 = L5_2.abs
-  L6_2 = math
-  L6_2 = L6_2.cos
-  L7_2 = L1_2.x
-  L6_2, L7_2 = L6_2(L7_2)
-  L5_2 = L5_2(L6_2, L7_2)
-  L4_2 = L4_2 * L5_2
-  L5_2 = math
-  L5_2 = L5_2.sin
-  L6_2 = L1_2.x
-  L5_2, L6_2, L7_2 = L5_2(L6_2)
-  L2_2 = L2_2(L3_2, L4_2, L5_2, L6_2, L7_2)
-  return L2_2
+  local L1_2, L2_2, L3_2, L4_2
+  -- Convert rotation from degrees to radians
+  L1_2 = vec3(math.pi / 180 * A0_2.x, math.pi / 180 * A0_2.y, math.pi / 180 * A0_2.z)
+  -- Use standard trigonometry to derive the direction vector
+  L2_2 = -math.sin(L1_2.z) * math.abs(math.cos(L1_2.x))
+  L3_2 = math.cos(L1_2.z) * math.abs(math.cos(L1_2.x))
+  L4_2 = math.sin(L1_2.x)
+  return vec3(L2_2, L3_2, L4_2)
 end
 L2_1.rotationToDirection = L3_1
 L2_1 = FUNC
