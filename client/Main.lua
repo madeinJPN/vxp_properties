@@ -1,674 +1,280 @@
-local L0_1, L1_1, L2_1, L3_1, L4_1
-L0_1 = assert
-L1_1 = lib
-L1_1 = L1_1.checkDependency
-L2_1 = "ox_lib"
-L3_1 = "3.30.4"
-L1_1 = L1_1(L2_1, L3_1)
-L2_1 = "ox_lib v3.30.4 or higher is required"
-L0_1(L1_1, L2_1)
-L0_1 = GlobalState
-L1_1 = AddEventHandler
-L2_1 = "onResourceStop"
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2
-  L1_2 = cache
-  L1_2 = L1_2.resource
-  if A0_2 ~= L1_2 then
-    return
-  end
-  ForcedExit = true
-  L1_2 = PlayerData
-  L1_2 = L1_2.currentProperty
-  if L1_2 then
-    L1_2 = PlayerData
-    L1_2 = L1_2.currentProperty
-    L2_2 = L1_2
-    L1_2 = L1_2.exit
-    L1_2(L2_2)
-  end
-  L1_2 = PlayerData
-  L1_2 = L1_2.insideBigZone
-  if L1_2 then
-    L2_2 = next
-    L3_2 = L1_2
-    L2_2 = L2_2(L3_2)
-    if L2_2 then
-      L2_2 = pairs
-      L3_2 = L1_2
-      L2_2, L3_2, L4_2, L5_2 = L2_2(L3_2)
-      for L6_2, L7_2 in L2_2, L3_2, L4_2, L5_2 do
-        if L7_2 then
-          L8_2 = PropertyManager
-          L9_2 = L8_2
-          L8_2 = L8_2.getPropertyById
-          L10_2 = L6_2
-          L8_2 = L8_2(L9_2, L10_2)
-          L10_2 = L8_2
-          L9_2 = L8_2.despawnCamera
-          L9_2(L10_2)
-          L10_2 = L8_2
-          L9_2 = L8_2.despawnFurniture
-          L11_2 = "inside"
-          L9_2(L10_2, L11_2)
-          L10_2 = L8_2
-          L9_2 = L8_2.despawnFurniture
-          L11_2 = "outside"
-          L9_2(L10_2, L11_2)
-        end
-      end
+-- Ensure required dependencies
+assert(lib.checkDependency('ox_lib', '3.30.4'), 'ox_lib v3.30.4 or higher is required')
+
+-- Clean up spawned entities when the resource stops
+AddEventHandler('onResourceStop', function(resource)
+    if resource ~= cache.resource then return end
+
+    ForcedExit = true
+
+    if PlayerData.currentProperty then
+        PlayerData.currentProperty:exit()
     end
-  end
-  L2_2 = Wait
-  L3_2 = 100
-  L2_2(L3_2)
-  L2_2 = DoScreenFadeIn
-  L3_2 = 100
-  L2_2(L3_2)
-end
-L1_1(L2_1, L3_1)
-function L1_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2
-  L0_2 = L0_1.buildings
-  if L0_2 then
-    L1_2 = #L0_2
-    if 0 ~= L1_2 then
-      goto lbl_13
-    end
-  end
-  L1_2 = lib
-  L1_2 = L1_2.print
-  L1_2 = L1_2.debug
-  L2_2 = "No buildings found"
-  L1_2(L2_2)
-  do return end
-  ::lbl_13::
-  L1_2 = pairs
-  L2_2 = L0_2
-  L1_2, L2_2, L3_2, L4_2 = L1_2(L2_2)
-  for L5_2, L6_2 in L1_2, L2_2, L3_2, L4_2 do
-    L7_2 = "building.%s"
-    L8_2 = L7_2
-    L7_2 = L7_2.format
-    L9_2 = L6_2
-    L7_2 = L7_2(L8_2, L9_2)
-    L8_2 = L0_1
-    L7_2 = L8_2[L7_2]
-    L8_2 = BuildingManager
-    L9_2 = L8_2
-    L8_2 = L8_2.createBuilding
-    L10_2 = L6_2
-    L11_2 = L7_2
-    L8_2(L9_2, L10_2, L11_2)
-    L8_2 = Wait
-    L9_2 = 0
-    L8_2(L9_2)
-  end
-  L1_2 = BuildingManager
-  L1_2.buildingsLoaded = true
-end
-LoadBuildings = L1_1
-function L1_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2
-  L0_2 = L0_1.properties
-  if L0_2 then
-    L1_2 = #L0_2
-    if 0 ~= L1_2 then
-      goto lbl_13
-    end
-  end
-  L1_2 = lib
-  L1_2 = L1_2.print
-  L1_2 = L1_2.debug
-  L2_2 = "No properties found"
-  L1_2(L2_2)
-  do return end
-  ::lbl_13::
-  L1_2 = pairs
-  L2_2 = L0_2
-  L1_2, L2_2, L3_2, L4_2 = L1_2(L2_2)
-  for L5_2, L6_2 in L1_2, L2_2, L3_2, L4_2 do
-    L7_2 = "property.%s"
-    L8_2 = L7_2
-    L7_2 = L7_2.format
-    L9_2 = L6_2
-    L7_2 = L7_2(L8_2, L9_2)
-    L8_2 = L0_1
-    L7_2 = L8_2[L7_2]
-    L8_2 = PropertyManager
-    L9_2 = L8_2
-    L8_2 = L8_2.createProperty
-    L10_2 = L6_2
-    L11_2 = L7_2
-    L8_2(L9_2, L10_2, L11_2)
-    L8_2 = Wait
-    L9_2 = 0
-    L8_2(L9_2)
-  end
-  L1_2 = PropertyManager
-  L1_2.propertiesLoaded = true
-end
-LoadProperties = L1_1
-function L1_1()
-  local L0_2, L1_2
-  L0_2 = PropertyManager
-  L1_2 = L0_2
-  L0_2 = L0_2.deleteAllProperties
-  L0_2(L1_2)
-end
-DeleteProperties = L1_1
-function L1_1()
-  local L0_2, L1_2
-  L0_2 = BuildingManager
-  L1_2 = L0_2
-  L0_2 = L0_2.deleteAllBuildings
-  L0_2(L1_2)
-end
-DeleteBuildings = L1_1
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:notify"
-function L3_1(A0_2)
-  local L1_2, L2_2
-  L1_2 = Framework
-  L1_2 = L1_2.Notify
-  L2_2 = A0_2
-  L1_2(L2_2)
-end
-L1_1(L2_1, L3_1)
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:updateFurniture"
-function L3_1(A0_2, A1_2, A2_2, A3_2, A4_2)
-  local L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2
-  L5_2 = PlayerData
-  L5_2 = L5_2.insideProperty
-  if L5_2 then
-    L5_2 = LocalPlayer
-    L5_2 = L5_2.state
-    L5_2 = L5_2.instance
-    if L5_2 ~= A0_2 then
-      return
-    end
-  end
-  L5_2 = PlayerData
-  L5_2 = L5_2.insideProperty
-  if not L5_2 then
-    L5_2 = PlayerData
-    L5_2 = L5_2.insideYards
-    L5_2 = L5_2[A0_2]
-    if not L5_2 then
-      return
-    end
-  end
-  L5_2 = cache
-  L5_2 = L5_2.serverId
-  if A4_2 == L5_2 then
-    return
-  end
-  L5_2 = PropertyManager
-  L6_2 = L5_2
-  L5_2 = L5_2.getPropertyById
-  L7_2 = A0_2
-  L5_2 = L5_2(L6_2, L7_2)
-  if L5_2 then
-    L6_2 = lib
-    L6_2 = L6_2.print
-    L6_2 = L6_2.debug
-    L7_2 = "Updating furniture for property: "
-    L8_2 = A0_2
-    L9_2 = ", fType: "
-    L10_2 = A1_2
-    L11_2 = ", fId: "
-    L12_2 = A2_2
-    L7_2 = L7_2 .. L8_2 .. L9_2 .. L10_2 .. L11_2 .. L12_2
-    L6_2(L7_2)
-    L7_2 = L5_2
-    L6_2 = L5_2.updateFurniture
-    L8_2 = A1_2
-    L9_2 = tostring
-    L10_2 = A2_2
-    L9_2 = L9_2(L10_2)
-    L10_2 = A3_2
-    L6_2(L7_2, L8_2, L9_2, L10_2)
-  end
-end
-L1_1(L2_1, L3_1)
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:refreshIpl"
-function L3_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2
-  L2_2 = LocalPlayer
-  L2_2 = L2_2.state
-  L2_2 = L2_2.instance
-  if L2_2 ~= A0_2 then
-    return
-  end
-  L2_2 = PropertyManager
-  L3_2 = L2_2
-  L2_2 = L2_2.getPropertyById
-  L4_2 = A0_2
-  L2_2 = L2_2(L3_2, L4_2)
-  if L2_2 then
-    L4_2 = L2_2
-    L3_2 = L2_2.exit
-    L3_2(L4_2)
-    L4_2 = L2_2
-    L3_2 = L2_2.enter
-    L3_2(L4_2)
-  end
-end
-L1_1(L2_1, L3_1)
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:doorBell"
-function L3_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2
-  while true do
-    L0_2 = RequestScriptAudioBank
-    L1_2 = "audiodirectory/properties_sounds"
-    L2_2 = false
-    L0_2 = L0_2(L1_2, L2_2)
-    if L0_2 then
-      break
-    end
-    L0_2 = Wait
-    L1_2 = 0
-    L0_2(L1_2)
-  end
-  L0_2 = lib
-  L0_2 = L0_2.print
-  L0_2 = L0_2.debug
-  L1_2 = "Audio bank loaded"
-  L0_2(L1_2)
-  L0_2 = GetSoundId
-  L0_2 = L0_2()
-  L1_2 = PlaySoundFrontend
-  L2_2 = L0_2
-  L3_2 = "house-doorbell"
-  L4_2 = "properties"
-  L5_2 = true
-  L1_2(L2_2, L3_2, L4_2, L5_2)
-  L1_2 = ReleaseSoundId
-  L2_2 = L0_2
-  L1_2(L2_2)
-  L1_2 = ReleaseNamedScriptAudioBank
-  L2_2 = "audiodirectory/properties_sounds"
-  L1_2(L2_2)
-  L1_2 = Framework
-  L1_2 = L1_2.Notify
-  L2_2 = {}
-  L3_2 = locale
-  L4_2 = "doorbell_notify"
-  L3_2 = L3_2(L4_2)
-  L2_2.description = L3_2
-  L3_2 = locale
-  L4_2 = "doorbell"
-  L3_2 = L3_2(L4_2)
-  L2_2.title = L3_2
-  L2_2.type = "info"
-  L2_2.duration = 5000
-  L2_2.icon = "fas fa-bell"
-  L1_2(L2_2)
-end
-L1_1(L2_1, L3_1)
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:deleteProperty"
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2
-  L1_2 = PropertyManager
-  L2_2 = L1_2
-  L1_2 = L1_2.deletePropertyById
-  L3_2 = A0_2
-  L1_2(L2_2, L3_2)
-end
-L1_1(L2_1, L3_1)
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:deleteBuilding"
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2
-  L1_2 = BuildingManager
-  L2_2 = L1_2
-  L1_2 = L1_2.getBuildingById
-  L3_2 = A0_2
-  L1_2 = L1_2(L2_2, L3_2)
-  if L1_2 then
-    L3_2 = L1_2
-    L2_2 = L1_2.delete
-    L2_2(L3_2)
-  end
-end
-L1_1(L2_1, L3_1)
-L1_1 = RegisterNetEvent
-L2_1 = "nolag_properties:client:sellProperty"
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2
-  L1_2 = PropertyManager
-  L2_2 = L1_2
-  L1_2 = L1_2.getPropertyById
-  L3_2 = A0_2
-  L1_2 = L1_2(L2_2, L3_2)
-  if L1_2 then
-    L2_2 = PlayerData
-    L2_2 = L2_2.currentProperty
-    if L1_2 == L2_2 then
-      L3_2 = L1_2
-      L2_2 = L1_2.exit
-      L2_2(L3_2)
-    end
-  end
-end
-L1_1(L2_1, L3_1)
-function L1_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2
-  L2_2 = PropertyManager
-  L3_2 = L2_2
-  L2_2 = L2_2.getPropertyById
-  L4_2 = A0_2
-  L2_2 = L2_2(L3_2, L4_2)
-  if L2_2 then
-    L4_2 = L2_2
-    L3_2 = L2_2.isPointInside
-    L5_2 = A1_2
-    return L3_2(L4_2, L5_2)
-  else
-    L3_2 = false
-    return L3_2
-  end
-end
-IsPointInside = L1_1
-L1_1 = AddStateBagChangeHandler
-L2_1 = ""
-L3_1 = "global"
-function L4_1(A0_2, A1_2, A2_2, A3_2, A4_2)
-  local L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2
-  if not A2_2 then
-    return
-  end
-  L5_2 = PlayerData
-  L5_2 = L5_2.loaded
-  if not L5_2 then
-    return
-  end
-  L5_2 = tonumber
-  L7_2 = A1_2
-  L6_2 = A1_2.match
-  L8_2 = "property%.([%w_]+)"
-  L6_2, L7_2, L8_2, L9_2, L10_2, L11_2 = L6_2(L7_2, L8_2)
-  L5_2 = L5_2(L6_2, L7_2, L8_2, L9_2, L10_2, L11_2)
-  if L5_2 then
-    L6_2 = A2_2
-    if nil == L6_2 then
-      L7_2 = lib
-      L7_2 = L7_2.print
-      L7_2 = L7_2.debug
-      L8_2 = "Deleting property: "
-      L9_2 = L5_2
-      L8_2 = L8_2 .. L9_2
-      L7_2(L8_2)
-      L7_2 = PropertyManager
-      L8_2 = L7_2
-      L7_2 = L7_2.deletePropertyById
-      L9_2 = L5_2
-      L7_2(L8_2, L9_2)
-      return
-    else
-      L7_2 = PropertyManager
-      L8_2 = L7_2
-      L7_2 = L7_2.getPropertyById
-      L9_2 = L5_2
-      L7_2 = L7_2(L8_2, L9_2)
-      if L7_2 then
-        L8_2 = lib
-        L8_2 = L8_2.print
-        L8_2 = L8_2.debug
-        L9_2 = "Updating property: "
-        L10_2 = L5_2
-        L9_2 = L9_2 .. L10_2
-        L8_2(L9_2)
-        L9_2 = L7_2
-        L8_2 = L7_2.updateData
-        L10_2 = L6_2
-        L8_2(L9_2, L10_2)
-      else
-        L8_2 = lib
-        L8_2 = L8_2.print
-        L8_2 = L8_2.debug
-        L9_2 = "Creating property: "
-        L10_2 = L5_2
-        L9_2 = L9_2 .. L10_2
-        L8_2(L9_2)
-        L8_2 = PropertyManager
-        L9_2 = L8_2
-        L8_2 = L8_2.createProperty
-        L10_2 = L5_2
-        L11_2 = L6_2
-        L8_2 = L8_2(L9_2, L10_2, L11_2)
-        L7_2 = L8_2
-      end
-    end
-  end
-end
-L1_1(L2_1, L3_1, L4_1)
-L1_1 = AddStateBagChangeHandler
-L2_1 = ""
-L3_1 = "global"
-function L4_1(A0_2, A1_2, A2_2, A3_2, A4_2)
-  local L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2
-  L5_2 = PlayerData
-  L5_2 = L5_2.loaded
-  if not L5_2 then
-    return
-  end
-  L5_2 = tonumber
-  L7_2 = A1_2
-  L6_2 = A1_2.match
-  L8_2 = "building%.([%w_]+)"
-  L6_2, L7_2, L8_2, L9_2, L10_2, L11_2 = L6_2(L7_2, L8_2)
-  L5_2 = L5_2(L6_2, L7_2, L8_2, L9_2, L10_2, L11_2)
-  L6_2 = A2_2
-  if L5_2 then
-    if nil == L6_2 then
-      L7_2 = lib
-      L7_2 = L7_2.print
-      L7_2 = L7_2.debug
-      L8_2 = "Deleting building: "
-      L9_2 = L5_2
-      L8_2 = L8_2 .. L9_2
-      L7_2(L8_2)
-      L7_2 = BuildingManager
-      L8_2 = L7_2
-      L7_2 = L7_2.deleteBuildingById
-      L9_2 = L5_2
-      L7_2(L8_2, L9_2)
-      return
-    else
-      L7_2 = BuildingManager
-      L8_2 = L7_2
-      L7_2 = L7_2.getBuildingById
-      L9_2 = L5_2
-      L7_2 = L7_2(L8_2, L9_2)
-      if L7_2 then
-        L8_2 = lib
-        L8_2 = L8_2.print
-        L8_2 = L8_2.debug
-        L9_2 = "Updating building: "
-        L10_2 = L5_2
-        L9_2 = L9_2 .. L10_2
-        L8_2(L9_2)
-        L9_2 = L7_2
-        L8_2 = L7_2.updateData
-        L10_2 = L6_2
-        L8_2(L9_2, L10_2)
-      else
-        L8_2 = lib
-        L8_2 = L8_2.print
-        L8_2 = L8_2.debug
-        L9_2 = "Creating building: "
-        L10_2 = L5_2
-        L9_2 = L9_2 .. L10_2
-        L8_2(L9_2)
-        L8_2 = BuildingManager
-        L9_2 = L8_2
-        L8_2 = L8_2.createBuilding
-        L10_2 = L5_2
-        L11_2 = L6_2
-        L8_2 = L8_2(L9_2, L10_2, L11_2)
-        L7_2 = L8_2
-      end
-    end
-  end
-end
-L1_1(L2_1, L3_1, L4_1)
-L1_1 = {}
-L2_1 = RegisterNetEvent
-L3_1 = "nolag_properties:client:concealPlayers"
-function L4_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2
-  L1_2 = GetActivePlayers
-  L1_2 = L1_2()
-  L2_2 = 1
-  L3_2 = #L1_2
-  L4_2 = 1
-  for L5_2 = L2_2, L3_2, L4_2 do
-    L6_2 = NetworkConcealPlayer
-    L7_2 = L1_2[L5_2]
-    L8_2 = false
-    L9_2 = false
-    L6_2(L7_2, L8_2, L9_2)
-  end
-  L1_1 = A0_2
-  L2_2 = PlayerData
-  L2_2 = L2_2.isConcealing
-  if not L2_2 then
-    L2_2 = PlayerData
-    L2_2.isConcealing = true
-    while true do
-      L2_2 = PlayerData
-      L2_2 = L2_2.isConcealing
-      if not L2_2 then
-        break
-      end
-      L2_2 = GetActivePlayers
-      L2_2 = L2_2()
-      L1_2 = L2_2
-      L2_2 = 1
-      L3_2 = #L1_2
-      L4_2 = 1
-      for L5_2 = L2_2, L3_2, L4_2 do
-        L6_2 = lib
-        L6_2 = L6_2.table
-        L6_2 = L6_2.contains
-        L7_2 = L1_1
-        L8_2 = GetPlayerServerId
-        L9_2 = L1_2[L5_2]
-        L8_2, L9_2 = L8_2(L9_2)
-        L6_2 = L6_2(L7_2, L8_2, L9_2)
-        if not L6_2 then
-          L6_2 = NetworkConcealPlayer
-          L7_2 = L1_2[L5_2]
-          L8_2 = true
-          L9_2 = false
-          L6_2(L7_2, L8_2, L9_2)
-        end
-      end
-      L2_2 = Wait
-      L3_2 = 3000
-      L2_2(L3_2)
-    end
-  end
-end
-L2_1(L3_1, L4_1)
-L2_1 = RegisterNetEvent
-L3_1 = "nolag_properties:client:revealPlayers"
-function L4_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2
-  L0_2 = GetActivePlayers
-  L0_2 = L0_2()
-  L1_2 = 1
-  L2_2 = #L0_2
-  L3_2 = 1
-  for L4_2 = L1_2, L2_2, L3_2 do
-    L5_2 = NetworkConcealPlayer
-    L6_2 = L0_2[L4_2]
-    L7_2 = false
-    L8_2 = false
-    L5_2(L6_2, L7_2, L8_2)
-  end
-  L1_2 = PlayerData
-  L1_2.isConcealing = false
-end
-L2_1(L3_1, L4_1)
-function L2_1()
-  local L0_2, L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2
-  L0_2 = PlayerData
-  L0_2 = L0_2.insideProperty
-  if L0_2 then
-    L0_2 = PlayerData
-    L0_2 = L0_2.currentProperty
-    if L0_2 then
-      L2_2 = L0_2
-      L1_2 = L0_2.manageProperty
-      L1_2(L2_2)
-    end
-  else
-    L0_2 = PlayerData
-    L0_2 = L0_2.insideYards
-    if L0_2 then
-      L1_2 = next
-      L2_2 = L0_2
-      L1_2 = L1_2(L2_2)
-      if L1_2 then
-        L1_2 = {}
-        L2_2 = pairs
-        L3_2 = L0_2
-        L2_2, L3_2, L4_2, L5_2 = L2_2(L3_2)
-        for L6_2, L7_2 in L2_2, L3_2, L4_2, L5_2 do
-          if L7_2 then
-            L8_2 = PropertyManager
-            L9_2 = L8_2
-            L8_2 = L8_2.getPropertyById
-            L10_2 = L6_2
-            L8_2 = L8_2(L9_2, L10_2)
-            L9_2 = #L1_2
-            L9_2 = L9_2 + 1
-            L10_2 = {}
-            L10_2.id = L6_2
-            L11_2 = L8_2.label
-            L10_2.title = L11_2
-            L10_2.icon = "fa-solid fa-building"
-            function L11_2()
-              local L0_3, L1_3
-              L0_3 = L8_2
-              L1_3 = L0_3
-              L0_3 = L0_3.manageProperty
-              L0_3(L1_3)
+
+    if PlayerData.insideBigZone then
+        for propertyId, inside in pairs(PlayerData.insideBigZone) do
+            if inside then
+                local property = PropertyManager:getPropertyById(propertyId)
+                property:despawnCamera()
+                property:despawnFurniture('inside')
+                property:despawnFurniture('outside')
             end
-            L10_2.onSelect = L11_2
-            L1_2[L9_2] = L10_2
-          end
         end
-        L2_2 = #L1_2
-        if L2_2 > 1 then
-          L2_2 = lib
-          L2_2 = L2_2.registerContext
-          L3_2 = {}
-          L3_2.id = "properties_menu"
-          L4_2 = locale
-          L5_2 = "properties_menu_title"
-          L4_2 = L4_2(L5_2)
-          L3_2.title = L4_2
-          L3_2.icon = "fa-solid fa-building"
-          L3_2.options = L1_2
-          L2_2(L3_2)
-          L2_2 = lib
-          L2_2 = L2_2.showContext
-          L3_2 = "properties_menu"
-          L2_2(L3_2)
-        else
-          L2_2 = L1_2[1]
-          L2_2 = L2_2.onSelect
-          L2_2()
-        end
-      end
     end
-  end
+
+    Wait(100)
+    DoScreenFadeIn(100)
+end)
+
+--- Load every building defined in GlobalState
+local function loadBuildings()
+    local buildings = GlobalState.buildings
+    if not buildings or #buildings == 0 then
+        lib.print.debug('No buildings found')
+        return
+    end
+
+    for _, id in pairs(buildings) do
+        local data = GlobalState[('building.%s'):format(id)]
+        BuildingManager:createBuilding(id, data)
+        Wait(0)
+    end
+
+    BuildingManager.buildingsLoaded = true
 end
-OpenPropertyMenu = L2_1
+LoadBuildings = loadBuildings
+
+--- Load every property defined in GlobalState
+local function loadProperties()
+    local properties = GlobalState.properties
+    if not properties or #properties == 0 then
+        lib.print.debug('No properties found')
+        return
+    end
+
+    for _, id in pairs(properties) do
+        local data = GlobalState[('property.%s'):format(id)]
+        PropertyManager:createProperty(id, data)
+        Wait(0)
+    end
+
+    PropertyManager.propertiesLoaded = true
+end
+LoadProperties = loadProperties
+
+--- Remove all spawned properties
+local function deleteProperties()
+    PropertyManager:deleteAllProperties()
+end
+DeleteProperties = deleteProperties
+
+--- Remove all spawned buildings
+local function deleteBuildings()
+    BuildingManager:deleteAllBuildings()
+end
+DeleteBuildings = deleteBuildings
+
+-- Generic notification helper
+RegisterNetEvent('nolag_properties:client:notify', function(msg)
+    Framework.Notify(msg)
+end)
+
+-- Update furniture for a property when broadcasted by the server
+RegisterNetEvent('nolag_properties:client:updateFurniture', function(propertyId, furnitureType, furnitureId, data, sourceServerId)
+    if PlayerData.insideProperty and LocalPlayer.state.instance ~= propertyId then
+        return
+    end
+
+    if not PlayerData.insideProperty then
+        if not PlayerData.insideYards[propertyId] then
+            return
+        end
+    end
+
+    if sourceServerId == cache.serverId then
+        return
+    end
+
+    local property = PropertyManager:getPropertyById(propertyId)
+    if property then
+        lib.print.debug(('Updating furniture for property: %s, fType: %s, fId: %s'):format(propertyId, furnitureType, furnitureId))
+        property:updateFurniture(furnitureType, tostring(furnitureId), data)
+    end
+end)
+
+-- Re-enter a property to refresh its IPL
+RegisterNetEvent('nolag_properties:client:refreshIpl', function(propertyId)
+    if LocalPlayer.state.instance ~= propertyId then return end
+    local property = PropertyManager:getPropertyById(propertyId)
+    if property then
+        property:exit()
+        property:enter()
+    end
+end)
+
+-- Play a doorbell sound and send a notification
+RegisterNetEvent('nolag_properties:client:doorBell', function()
+    while not RequestScriptAudioBank('audiodirectory/properties_sounds', false) do
+        Wait(0)
+    end
+
+    lib.print.debug('Audio bank loaded')
+    local soundId = GetSoundId()
+    PlaySoundFrontend(soundId, 'house-doorbell', 'properties', true)
+    ReleaseSoundId(soundId)
+    ReleaseNamedScriptAudioBank('audiodirectory/properties_sounds')
+
+    Framework.Notify({
+        title = locale('doorbell'),
+        description = locale('doorbell_notify'),
+        type = 'info',
+        duration = 5000,
+        icon = 'fas fa-bell'
+    })
+end)
+
+-- Delete a property by id
+RegisterNetEvent('nolag_properties:client:deleteProperty', function(id)
+    PropertyManager:deletePropertyById(id)
+end)
+
+-- Delete a building by id
+RegisterNetEvent('nolag_properties:client:deleteBuilding', function(id)
+    local building = BuildingManager:getBuildingById(id)
+    if building then
+        building:delete()
+    end
+end)
+
+-- Ensure the player leaves a property after selling it
+RegisterNetEvent('nolag_properties:client:sellProperty', function(id)
+    local property = PropertyManager:getPropertyById(id)
+    if property and property == PlayerData.currentProperty then
+        property:exit()
+    end
+end)
+
+--- Check if coords are inside the property boundaries
+--- @param propertyId number
+--- @param coords vector3
+function IsPointInside(propertyId, coords)
+    local property = PropertyManager:getPropertyById(propertyId)
+    return property and property:isPointInside(coords) or false
+end
+
+-- React to property updates in GlobalState
+AddStateBagChangeHandler('', 'global', function(_, key, value)
+    if not PlayerData.loaded then return end
+    local id = tonumber(key:match('property%.([%w_]+)'))
+    if not id then return end
+
+    if value == nil then
+        lib.print.debug(('Deleting property: %s'):format(id))
+        PropertyManager:deletePropertyById(id)
+    else
+        local property = PropertyManager:getPropertyById(id)
+        if property then
+            lib.print.debug(('Updating property: %s'):format(id))
+            property:updateData(value)
+        else
+            lib.print.debug(('Creating property: %s'):format(id))
+            PropertyManager:createProperty(id, value)
+        end
+    end
+end)
+
+-- React to building updates in GlobalState
+AddStateBagChangeHandler('', 'global', function(_, key, value)
+    if not PlayerData.loaded then return end
+    local id = tonumber(key:match('building%.([%w_]+)'))
+    if not id then return end
+
+    if value == nil then
+        lib.print.debug(('Deleting building: %s'):format(id))
+        BuildingManager:deleteBuildingById(id)
+    else
+        local building = BuildingManager:getBuildingById(id)
+        if building then
+            lib.print.debug(('Updating building: %s'):format(id))
+            building:updateData(value)
+        else
+            lib.print.debug(('Creating building: %s'):format(id))
+            BuildingManager:createBuilding(id, value)
+        end
+    end
+end)
+
+local concealedPlayers = {}
+
+-- Conceal players not inside the instance
+RegisterNetEvent('nolag_properties:client:concealPlayers', function(serverIds)
+    local players = GetActivePlayers()
+    for i = 1, #players do
+        NetworkConcealPlayer(players[i], false, false)
+    end
+
+    concealedPlayers = serverIds
+    if PlayerData.isConcealing then return end
+    PlayerData.isConcealing = true
+
+    while PlayerData.isConcealing do
+        local active = GetActivePlayers()
+        for i = 1, #active do
+            local serverId = GetPlayerServerId(active[i])
+            if not lib.table.contains(concealedPlayers, serverId) then
+                NetworkConcealPlayer(active[i], true, false)
+            end
+        end
+        Wait(3000)
+    end
+end)
+
+-- Reveal all players
+RegisterNetEvent('nolag_properties:client:revealPlayers', function()
+    local players = GetActivePlayers()
+    for i = 1, #players do
+        NetworkConcealPlayer(players[i], false, false)
+    end
+    PlayerData.isConcealing = false
+end)
+
+--- Open the property management menu for all properties the player is near
+function OpenPropertyMenu()
+    if PlayerData.insideProperty then
+        if PlayerData.currentProperty then
+            PlayerData.currentProperty:manageProperty()
+        end
+        return
+    end
+
+    if not PlayerData.insideYards then return end
+
+    local options = {}
+    for id, inside in pairs(PlayerData.insideYards) do
+        if inside then
+            local property = PropertyManager:getPropertyById(id)
+            options[#options + 1] = {
+                id = id,
+                title = property.label,
+                icon = 'fa-solid fa-building',
+                onSelect = function()
+                    property:manageProperty()
+                end
+            }
+        end
+    end
+
+    if #options == 0 then return end
+    if #options == 1 then
+        options[1].onSelect()
+        return
+    end
+
+    lib.registerContext({
+        id = 'properties_menu',
+        title = locale('properties_menu_title'),
+        icon = 'fa-solid fa-building',
+        options = options
+    })
+    lib.showContext('properties_menu')
+end

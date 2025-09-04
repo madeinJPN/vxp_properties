@@ -1,162 +1,61 @@
-local L0_1, L1_1, L2_1, L3_1
-L0_1 = require
-L1_1 = "glm"
-L0_1 = L0_1(L1_1)
-L1_1 = exports
-L1_1 = L1_1.nolag_properties
-L2_1 = {}
-FUNC = L2_1
-L2_1 = FUNC
-function L3_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2
-  L2_2 = 10
-  L2_2 = L2_2 ^ A1_2
-  L3_2 = math
-  L3_2 = L3_2.floor
-  L4_2 = A0_2 * L2_2
-  L3_2 = L3_2(L4_2)
-  L3_2 = L3_2 / L2_2
-  return L3_2
+-- Utility helpers used by the furniture editor
+
+local glm = require("glm")
+local propertyExports = exports.nolag_properties
+
+local FUNC = {}
+
+---Round a number to the given decimals
+function FUNC.round(value, decimals)
+  local factor = 10 ^ decimals
+  return math.floor(value * factor) / factor
 end
-L2_1.round = L3_1
-L2_1 = FUNC
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2, L4_2, L5_2, L6_2, L7_2
-  L1_2 = vec3
-  L2_2 = math
-  L2_2 = L2_2.pi
-  L2_2 = L2_2 / 180
-  L3_2 = A0_2.x
-  L2_2 = L2_2 * L3_2
-  L3_2 = math
-  L3_2 = L3_2.pi
-  L3_2 = L3_2 / 180
-  L4_2 = A0_2.y
-  L3_2 = L3_2 * L4_2
-  L4_2 = math
-  L4_2 = L4_2.pi
-  L4_2 = L4_2 / 180
-  L5_2 = A0_2.z
-  L4_2 = L4_2 * L5_2
-  L1_2 = L1_2(L2_2, L3_2, L4_2)
-  L2_2 = vec3
-  L3_2 = math
-  L3_2 = L3_2.sin
-  L4_2 = L1_2.z
-  L3_2 = L3_2(L4_2)
-  L3_2 = -L3_2
-  L4_2 = math
-  L4_2 = L4_2.abs
-  L5_2 = math
-  L5_2 = L5_2.cos
-  L6_2 = L1_2.x
-  L5_2, L6_2, L7_2 = L5_2(L6_2)
-  L4_2 = L4_2(L5_2, L6_2, L7_2)
-  L3_2 = L3_2 * L4_2
-  L4_2 = math
-  L4_2 = L4_2.cos
-  L5_2 = L1_2.z
-  L4_2 = L4_2(L5_2)
-  L5_2 = math
-  L5_2 = L5_2.abs
-  L6_2 = math
-  L6_2 = L6_2.cos
-  L7_2 = L1_2.x
-  L6_2, L7_2 = L6_2(L7_2)
-  L5_2 = L5_2(L6_2, L7_2)
-  L4_2 = L4_2 * L5_2
-  L5_2 = math
-  L5_2 = L5_2.sin
-  L6_2 = L1_2.x
-  L5_2, L6_2, L7_2 = L5_2(L6_2)
-  L2_2 = L2_2(L3_2, L4_2, L5_2, L6_2, L7_2)
-  return L2_2
+
+---Convert a rotation vector to a direction vector
+function FUNC.rotationToDirection(rot)
+  local r = vec3(math.rad(rot.x), math.rad(rot.y), math.rad(rot.z))
+  local x = -math.sin(r.z) * math.abs(math.cos(r.x))
+  local y =  math.cos(r.z) * math.abs(math.cos(r.x))
+  local z =  math.sin(r.x)
+  return vec3(x, y, z)
 end
-L2_1.rotationToDirection = L3_1
-L2_1 = FUNC
-function L3_1(A0_2, A1_2)
-  local L2_2, L3_2, L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2
-  L2_2 = GetFinalRenderedCamCoord
-  L2_2 = L2_2()
-  L3_2 = L0_1.rad
-  L4_2 = GetFinalRenderedCamRot
-  L5_2 = 2
-  L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2 = L4_2(L5_2)
-  L3_2 = L3_2(L4_2, L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2)
-  L4_2 = L0_1.quatEulerAngleZYX
-  L5_2 = L3_2.z
-  L6_2 = L3_2.y
-  L7_2 = L3_2.x
-  L4_2 = L4_2(L5_2, L6_2, L7_2)
-  L5_2 = L2_2
-  L6_2 = L0_1.rayPicking
-  L7_2 = L0_1.forward
-  L7_2 = L7_2()
-  L7_2 = L4_2 * L7_2
-  L8_2 = L0_1.up
-  L8_2 = L8_2()
-  L8_2 = L4_2 * L8_2
-  L9_2 = L0_1.rad
-  L10_2 = GetFinalRenderedCamFov
-  L10_2, L11_2, L12_2, L13_2, L14_2 = L10_2()
-  L9_2 = L9_2(L10_2, L11_2, L12_2, L13_2, L14_2)
-  L10_2 = GetAspectRatio
-  L11_2 = true
-  L10_2 = L10_2(L11_2)
-  L11_2 = 0.1
-  L12_2 = 10000.0
-  L13_2 = A0_2 * 2
-  L13_2 = L13_2 - 1
-  L14_2 = A1_2 * 2
-  L14_2 = L14_2 - 1
-  L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2 = L6_2(L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2)
-  return L5_2, L6_2, L7_2, L8_2, L9_2, L10_2, L11_2, L12_2, L13_2, L14_2
+
+---Return a ray starting from the camera for the given screen position
+function FUNC.screenPositionToCameraRay(x, y)
+  local camPos = GetFinalRenderedCamCoord()
+  local camRot = glm.rad(GetFinalRenderedCamRot(2))
+  local camQuat = glm.quatEulerAngleZYX(camRot.z, camRot.y, camRot.x)
+  local origin = camPos
+  local direction = camQuat * glm.forward()
+  local up = camQuat * glm.up()
+  local fov = glm.rad(GetFinalRenderedCamFov())
+  local aspectRatio = GetAspectRatio(true)
+  local nearClip, farClip = 0.1, 10000.0
+  local sx, sy = x * 2 - 1, y * 2 - 1
+  return origin, glm.rayPicking(direction, up, fov, aspectRatio, nearClip, farClip, sx, sy)
 end
-L2_1.screenPositionToCameraRay = L3_1
-L2_1 = FUNC
-function L3_1(A0_2)
-  local L1_2, L2_2
-  L1_2 = Entity
-  L2_2 = A0_2
-  L1_2 = L1_2(L2_2)
-  L1_2 = L1_2.id
-  L2_2 = nil ~= L1_2
-  return L2_2
+
+---Check if a network entity is furniture
+function FUNC.isEntityFurniture(netId)
+  local ent = Entity(netId)
+  return ent.id ~= nil
 end
-L2_1.isEntityFurniture = L3_1
-L2_1 = FUNC
-function L3_1(A0_2)
-  local L1_2, L2_2
-  L1_2 = Entity
-  L2_2 = A0_2
-  L1_2 = L1_2(L2_2)
-  L1_2 = L1_2.id
-  if not L1_2 then
-    L2_2 = nil
-    return L2_2
+
+---Get furniture data from an entity
+function FUNC.getFurnitureFromEntity(entity)
+  local ent = Entity(entity)
+  if not ent.id then return nil end
+  return Client.spawnedFurniture[ent.id]
+end
+
+---Generate an incremental string id for a table
+function FUNC.generateId(tbl)
+  local i = 1
+  while tbl[tostring(i)] do
+    i = i + 1
   end
-  L2_2 = Client
-  L2_2 = L2_2.spawnedFurniture
-  L2_2 = L2_2[L1_2]
-  return L2_2
+  return tostring(i)
 end
-L2_1.getFurnitureFromEntity = L3_1
-L2_1 = FUNC
-function L3_1(A0_2)
-  local L1_2, L2_2, L3_2
-  L1_2 = 1
-  while true do
-    L2_2 = tostring
-    L3_2 = L1_2
-    L2_2 = L2_2(L3_2)
-    L2_2 = A0_2[L2_2]
-    if nil == L2_2 then
-      break
-    end
-    L1_2 = L1_2 + 1
-  end
-  L2_2 = tostring
-  L3_2 = L1_2
-  return L2_2(L3_2)
-end
-L2_1.generateId = L3_1
+
+return FUNC
+
